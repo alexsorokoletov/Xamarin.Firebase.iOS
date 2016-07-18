@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1A126D41-EF5D-4693-9409-C1AB98BD3B10}</ProjectGuid>
+    <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Firebase.iOS</RootNamespace>
+    <AssemblyName>Firebase.iOS</AssemblyName>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Xamarin.iOS" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FirebaseInstanceID\FirebaseInstanceID.linkwith.cs">
+      <DependentUpon>FirebaseInstanceID.a</DependentUpon>
+    </Compile>
+    <Compile Include="FirebaseAnalytics\FirebaseAnalytics.linkwith.cs">
+      <DependentUpon>FirebaseAnalytics.a</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleUtilities\GoogleUtilities.linkwith.cs">
+      <DependentUpon>GoogleUtilities.a</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleInterchangeUtilities\GoogleInterchangeUtilities.linkwith.cs">
+      <DependentUpon>GoogleInterchangeUtilities.a</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleSymbolUtilities\GoogleSymbolUtilities.linkwith.cs">
+      <DependentUpon>GoogleSymbolUtilities.a</DependentUpon>
+    </Compile>
+    <Compile Include="FirebaseAuth\FirebaseAuth.linkwith.cs">
+      <DependentUpon>FirebaseAuth.a</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleAppUtilities\GoogleAppUtilities.linkwith.cs">
+      <DependentUpon>GoogleAppUtilities.a</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleSignIn\GoogleSignIn.linkwith.cs">
+      <DependentUpon>GoogleSignIn.a</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleAuthUtilities\GoogleAuthUtilities.linkwith.cs">
+      <DependentUpon>GoogleAuthUtilities.a</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleNetworkingUtilities\GoogleNetworkingUtilities.linkwith.cs">
+      <DependentUpon>GoogleNetworkingUtilities.a</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingApiDefinition Include="FirebaseInstanceID\ApiDefinition.cs" />
+    <ObjcBindingApiDefinition Include="FirebaseAnalytics\ApiDefinitions.cs" />
+    <ObjcBindingApiDefinition Include="FirebaseAuth\FirebaseAuth_ApiDefinitions.cs" />
+    <ObjcBindingApiDefinition Include="GoogleSignIn\ApiDefinitions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingCoreSource Include="FirebaseInstanceID\Structs.cs" />
+    <ObjcBindingCoreSource Include="FirebaseAnalytics\StructsAndEnums.cs" />
+    <ObjcBindingCoreSource Include="FirebaseAuth\FirebaseAuth_StructsAndEnums.cs" />
+    <ObjcBindingCoreSource Include="GoogleSignIn\StructsAndEnums.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="FirebaseInstanceID\" />
+    <Folder Include="FirebaseAnalytics\" />
+    <Folder Include="GoogleUtilities\" />
+    <Folder Include="GoogleSymbolUtilities\" />
+    <Folder Include="GoogleInterchangeUtilities\" />
+    <Folder Include="GoogleAppUtilities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingNativeLibrary Include="FirebaseInstanceID\FirebaseInstanceID.a" />
+    <ObjcBindingNativeLibrary Include="FirebaseAnalytics\FirebaseAnalytics.a" />
+    <ObjcBindingNativeLibrary Include="GoogleUtilities\GoogleUtilities.a" />
+    <ObjcBindingNativeLibrary Include="GoogleInterchangeUtilities\GoogleInterchangeUtilities.a" />
+    <ObjcBindingNativeLibrary Include="GoogleSymbolUtilities\GoogleSymbolUtilities.a" />
+    <ObjcBindingNativeLibrary Include="FirebaseAuth\FirebaseAuth.a" />
+    <ObjcBindingNativeLibrary Include="GoogleAppUtilities\GoogleAppUtilities.a" />
+    <ObjcBindingNativeLibrary Include="GoogleSignIn\GoogleSignIn.a" />
+    <ObjcBindingNativeLibrary Include="GoogleAuthUtilities\GoogleAuthUtilities.a" />
+    <ObjcBindingNativeLibrary Include="GoogleNetworkingUtilities\GoogleNetworkingUtilities.a" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\GTMOAuth2ViewTouch.xib" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\Info.plist" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\Roboto-Bold.ttf" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\google.png" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\google%402x.png" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\google%403x.png" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\gplus.png" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\gplus%402x.png" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\gplus%403x.png" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\ar.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\ca.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\cs.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\da.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\de.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\el.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\en.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\en_GB.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\es.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\es_MX.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\fi.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\fr.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\he.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\hr.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\hu.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\id.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\it.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\ja.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\ko.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\ms.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\nb.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\nl.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\pl.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\pt.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\pt_BR.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\pt_PT.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\ro.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\ru.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\sk.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\sv.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\th.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\tr.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\uk.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\vi.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\zh_CN.lproj\GoogleSignIn.strings" />
+    <BundleResource Include="Resources\GoogleSignIn.bundle\zh_TW.lproj\GoogleSignIn.strings" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
+</Project>
