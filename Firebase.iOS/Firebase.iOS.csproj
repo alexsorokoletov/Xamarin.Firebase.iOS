@@ -65,18 +65,23 @@
     <Compile Include="GoogleNetworkingUtilities\GoogleNetworkingUtilities.linkwith.cs">
       <DependentUpon>GoogleNetworkingUtilities.a</DependentUpon>
     </Compile>
+    <Compile Include="FirebaseDatabase\FirebaseDatabase.linkwith.cs">
+      <DependentUpon>FirebaseDatabase.a</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingApiDefinition Include="FirebaseInstanceID\ApiDefinition.cs" />
     <ObjcBindingApiDefinition Include="FirebaseAnalytics\ApiDefinitions.cs" />
     <ObjcBindingApiDefinition Include="FirebaseAuth\FirebaseAuth_ApiDefinitions.cs" />
     <ObjcBindingApiDefinition Include="GoogleSignIn\ApiDefinitions.cs" />
+    <ObjcBindingApiDefinition Include="FirebaseDatabase\FirebaseDatabase_ApiDefinitions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingCoreSource Include="FirebaseInstanceID\Structs.cs" />
     <ObjcBindingCoreSource Include="FirebaseAnalytics\StructsAndEnums.cs" />
     <ObjcBindingCoreSource Include="FirebaseAuth\FirebaseAuth_StructsAndEnums.cs" />
     <ObjcBindingCoreSource Include="GoogleSignIn\StructsAndEnums.cs" />
+    <ObjcBindingCoreSource Include="FirebaseDatabase\FirebaseDatabase_StructsAndEnums.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="FirebaseInstanceID\" />
@@ -85,6 +90,7 @@
     <Folder Include="GoogleSymbolUtilities\" />
     <Folder Include="GoogleInterchangeUtilities\" />
     <Folder Include="GoogleAppUtilities\" />
+    <Folder Include="FirebaseDatabase\" />
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingNativeLibrary Include="FirebaseInstanceID\FirebaseInstanceID.a" />
@@ -97,6 +103,7 @@
     <ObjcBindingNativeLibrary Include="GoogleSignIn\GoogleSignIn.a" />
     <ObjcBindingNativeLibrary Include="GoogleAuthUtilities\GoogleAuthUtilities.a" />
     <ObjcBindingNativeLibrary Include="GoogleNetworkingUtilities\GoogleNetworkingUtilities.a" />
+    <ObjcBindingNativeLibrary Include="FirebaseDatabase\FirebaseDatabase.a" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\GTMOAuth2ViewTouch.xib" />

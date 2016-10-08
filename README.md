@@ -1,5 +1,5 @@
 # Xamarin.Firebase.iOS
-[Google Firebase](https://firebase.google.com/docs) bindings for Xamarin.iOS
+[Google Firebase](https://firebase.google.com/docs) bindings for Xamarin.iOS. This code is provided as is.
 
 In order to use the new Firebase from Google we have to get some bindings for Xamarin apps, right?
 
@@ -11,13 +11,25 @@ Firebase for Xamarin.Android is already available in Nuget. Read more [here](htt
 
 
 ## Contributing
-Appreciate any feedback on the bindings and how to make them better.
+I appreciate any feedback on the bindings and how to make them better. Open an issue or submit a pull request. 
 
 
 ## What's in there
 1. [Firebase Analytics](https://firebase.google.com/docs/analytics/)
-2. [Firebase Auth](https://firebase.google.com/docs/auth) (Google Sign In)
+2. [Firebase Auth](https://firebase.google.com/docs/auth) (Google Sign In for now only)
+3. [Firebase Realtime Database](https://firebase.google.com/docs/database/)
 and a sample app.
 
 ## Running the sample.
-Please create an app in the Firebase console, download `GoogleService-Info.plist` and put it in the project. And enable Google Accounts sign in.
+Please create an app in the Firebase console, download `GoogleService-Info.plist` and put it in the project. 
+
+Firebase Auth demo requires enabled Google Sign In
+
+Firebase Database demo requires a "node1" child node in the database.
+
+
+### Roadmap
+1. Add as many Firebase features as possible
+2. Provide this binding as a Nuget
+3. Enable versioning and clearly declare which version of Firebase is used in each build
+4. Configure automatic CI
