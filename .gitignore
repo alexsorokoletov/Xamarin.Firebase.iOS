@@ -254,3 +254,5 @@ paket-files/
 
 FirebaseTestApp/GoogleService-Info.plist
 temp/
+
+!automatic/packages-raw
