@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
+  <id>DT.Xamarin.GoogleToolboxForMac_NSData_zlib</id>
+  <version>0.0.1</version>
+  <authors>DreamTeam Mobile</authors>
+  <owners>DreamTeam Mobile</owners>
+  <summary>Google utilities for iOS and OSX development.</summary>
+  <licenseUrl>https://github.com/google/google-toolbox-for-mac</licenseUrl>
+  <projectUrl>https://github.com/google/google-toolbox-for-mac</projectUrl>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  <description>Xamarin binding === A collection of source from different Google projects that may be of use
+to developers working on iOS or OS X projects.</description>
+  <releaseNotes></releaseNotes>
+  <copyright>Not yet available</copyright>    
+  <tags>Xamarin iOS</tags>
+  <dependencies>
+    <dependency id="DT.Xamarin.GoogleToolboxForMac_Defines" version="0.0.1" />
+
+  </dependencies>
+  <references></references>
+  </metadata>
+  <files>
+    <file src="bin/Release/GoogleToolboxForMac_NSData_zlib.dll" target="lib/Xamarin.iOS" />
+  </files>
+</package>

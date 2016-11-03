@@ -2,3 +2,9 @@ pods
 DT.Pods
 DT.Pods.zip
 PodTry
+.paket/paket.exe
+bindings/packages-tmp
+bindings/packages-good
+bindings/**/bin
+bindings/**/obj
+bindings/**/*.nupkg

@@ -1,10 +1,8 @@
-using FirebaseInstanceID;
 using Foundation;
 
-namespace DreamTeam.Xamarin.Firebase
+namespace DreamTeam.Xamarin.FirebaseInstanceID
 {
 	[Static]
-	[Verify (ConstantsInterfaceAssociation)]
 	partial interface Constants
 	{
 		// extern NSString *const _Nonnull kFIRInstanceIDScopeFirebaseMessaging;
@@ -44,7 +42,6 @@ namespace DreamTeam.Xamarin.Firebase
 
 		// -(NSString * _Nullable)token;
 		[NullAllowed, Export ("token")]
-		[Verify (MethodToProperty)]
 		string Token { get; }
 
 		// -(void)tokenWithAuthorizedEntity:(NSString * _Nonnull)authorizedEntity scope:(NSString * _Nonnull)scope options:(NSDictionary * _Nullable)options handler:(FIRInstanceIDTokenHandler _Nonnull)handler;

@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using ObjCRuntime;
 
-namespace DreamTeam.Xamarin.Firebase
+namespace DreamTeam.Xamarin.FirebaseInstanceID
 {
 	[Native]
-	public enum FIRInstanceIDError : nuint
+	public enum FIRInstanceIDError : ulong
 	{
 		Unknown = 0,
 		Authentication = 1,
@@ -16,7 +16,7 @@ namespace DreamTeam.Xamarin.Firebase
 	}
 
 	[Native]
-	public enum FIRInstanceIDAPNSTokenType : nint
+	public enum FIRInstanceIDAPNSTokenType : long
 	{
 		Unknown,
 		Sandbox,

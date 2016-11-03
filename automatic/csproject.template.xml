@@ -47,5 +47,8 @@
   <ItemGroup>
     <ObjcBindingNativeLibrary Include="@PodName@.a" />
   </ItemGroup>
+  <ItemGroup>
+@References@
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

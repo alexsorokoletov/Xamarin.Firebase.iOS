@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using ObjCRuntime;
 
-namespace DreamTeam.Xamarin.Firebase
+namespace DreamTeam.Xamarin.FirebaseCore
 {
 	[Native]
-	public enum FIRLogLevel : nint
+	public enum FIRLogLevel : long
 	{
 		Error = 0,
 		Warning,

@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E4910EC8-53DB-4ECB-9F06-47BB63831569}</ProjectGuid>
+    <ProjectGuid>{B6E13536-FB67-4FC8-AA1F-F0242069B2F6}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>DreamTeam.Xamarin.Firebase</RootNamespace>
+    <RootNamespace>DreamTeam.Xamarin.FirebaseAnalytics</RootNamespace>
     <AssemblyName>FirebaseAnalytics</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
@@ -46,6 +46,29 @@
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingNativeLibrary Include="FirebaseAnalytics.a" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FirebaseCore">
+      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseCore.0.0.1\lib\Xamarin.iOS\FirebaseCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FirebaseInstanceID">
+      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseInstanceID.0.0.1\lib\Xamarin.iOS\FirebaseInstanceID.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GoogleSymbolUtilities">
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.0.0.1\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GoogleToolboxForMac_NSData_zlib">
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleToolboxForMac_NSData_zlib.0.0.1\lib\Xamarin.iOS\GoogleToolboxForMac_NSData_zlib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GoogleInterchangeUtilities">
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleInterchangeUtilities.0.0.1\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

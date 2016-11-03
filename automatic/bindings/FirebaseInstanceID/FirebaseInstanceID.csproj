@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C5048BAB-250C-4526-A47C-668B5B3CEF11}</ProjectGuid>
+    <ProjectGuid>{4D596197-BABA-4EEE-BB5E-82A62E7FC4DC}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>DreamTeam.Xamarin.Firebase</RootNamespace>
+    <RootNamespace>DreamTeam.Xamarin.FirebaseInstanceID</RootNamespace>
     <AssemblyName>FirebaseInstanceID</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
@@ -46,6 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingNativeLibrary Include="FirebaseInstanceID.a" />
+  </ItemGroup>
+  <ItemGroup>
+
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

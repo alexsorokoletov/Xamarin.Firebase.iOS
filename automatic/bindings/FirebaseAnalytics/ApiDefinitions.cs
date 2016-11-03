@@ -1,9 +1,11 @@
+using DreamTeam.Xamarin.FirebaseCore;
+using DreamTeam.Xamarin.FirebaseInstanceID;
+using DreamTeam.Xamarin.GoogleToolboxForMac_NSData_zlib;
 using System;
-using FirebaseCore;
 using Foundation;
 using ObjCRuntime;
 
-namespace DreamTeam.Xamarin.Firebase
+namespace DreamTeam.Xamarin.FirebaseAnalytics
 {
 	// @interface FIRAnalytics : NSObject
 	[BaseType (typeof(NSObject))]
@@ -58,7 +60,7 @@ namespace DreamTeam.Xamarin.Firebase
 		// +(FIRAnalyticsConfiguration *)sharedInstance;
 		[Static]
 		[Export ("sharedInstance")]
-		[Verify (MethodToProperty)]
+		// [Verify (MethodToProperty)]
 		FIRAnalyticsConfiguration SharedInstance { get; }
 
 		// -(void)setMinimumSessionInterval:(NSTimeInterval)minimumSessionInterval;
@@ -104,7 +106,7 @@ namespace DreamTeam.Xamarin.Firebase
 		// +(FIRApp * _Nullable)defaultApp;
 		[Static]
 		[NullAllowed, Export ("defaultApp")]
-		[Verify (MethodToProperty)]
+		// [Verify (MethodToProperty)]
 		FIRApp DefaultApp { get; }
 
 		// +(FIRApp * _Nullable)appNamed:(NSString * _Nonnull)name;
@@ -116,7 +118,7 @@ namespace DreamTeam.Xamarin.Firebase
 		// +(NSDictionary * _Nullable)allApps;
 		[Static]
 		[NullAllowed, Export ("allApps")]
-		[Verify (MethodToProperty)]
+		// [Verify (MethodToProperty)]
 		NSDictionary AllApps { get; }
 
 		// -(void)deleteApp:(FIRAppVoidBoolCallback _Nonnull)completion;
@@ -139,7 +141,7 @@ namespace DreamTeam.Xamarin.Firebase
 		// +(FIRConfiguration *)sharedInstance;
 		[Static]
 		[Export ("sharedInstance")]
-		[Verify (MethodToProperty)]
+		// [Verify (MethodToProperty)]
 		FIRConfiguration SharedInstance { get; }
 
 		// @property (readwrite, nonatomic) FIRAnalyticsConfiguration * analyticsConfiguration;
@@ -158,7 +160,7 @@ namespace DreamTeam.Xamarin.Firebase
 		// +(FIROptions *)defaultOptions;
 		[Static]
 		[Export ("defaultOptions")]
-		[Verify (MethodToProperty)]
+		// [Verify (MethodToProperty)]
 		FIROptions DefaultOptions { get; }
 
 		// @property (readonly, copy, nonatomic) NSString * APIKey;

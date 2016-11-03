@@ -6,17 +6,19 @@
   <authors>@Authors@</authors>
   <owners>@Authors@</owners>
   <summary>@Summary@</summary>
-  <licenseUrl>Not yet available</licenseUrl>
+  <licenseUrl>@ProjectUrl@</licenseUrl>
   <projectUrl>@ProjectUrl@</projectUrl>
   <requireLicenseAcceptance>false</requireLicenseAcceptance>
   <description>@Description@</description>
   <releaseNotes>@ReleaseNotes@</releaseNotes>
   <copyright>Not yet available</copyright>    
   <tags>Xamarin iOS</tags>
-  <dependencies>@Dependencies@</dependencies>
+  <dependencies>
+@Dependencies@
+  </dependencies>
   <references></references>
   </metadata>
   <files>
-    <file src="bin\Release\*.dll" target="lib\Xamarin.iOS10" />
+    <file src="bin/Release/@DllName@.dll" target="lib/Xamarin.iOS" />
   </files>
 </package>

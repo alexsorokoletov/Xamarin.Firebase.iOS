@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DCB06C07-443F-4052-ADEB-1C89040650B2}</ProjectGuid>
+    <ProjectGuid>{CB81173A-8662-4546-BE9D-F551CE37D345}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>DreamTeam.Xamarin.Firebase</RootNamespace>
+    <RootNamespace>DreamTeam.Xamarin.GoogleInterchangeUtilities</RootNamespace>
     <AssemblyName>GoogleInterchangeUtilities</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
@@ -46,6 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingNativeLibrary Include="GoogleInterchangeUtilities.a" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="GoogleSymbolUtilities">
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.0.0.1\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>
