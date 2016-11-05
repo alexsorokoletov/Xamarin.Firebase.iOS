@@ -19,6 +19,6 @@
   <references></references>
   </metadata>
   <files>
-    <file src="bin/Release/@DllName@.dll" target="lib/Xamarin.iOS" />
+    @Files@
   </files>
 </package>

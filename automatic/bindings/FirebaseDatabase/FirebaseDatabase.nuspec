@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
+  <id>DT.Xamarin.FirebaseDatabase</id>
+  <version>0.0.2</version>
+  <authors>DreamTeam Mobile</authors>
+  <owners>DreamTeam Mobile</owners>
+  <summary>Firebase Realtime Database for iOS</summary>
+  <licenseUrl>https://firebase.google.com/</licenseUrl>
+  <projectUrl>https://firebase.google.com/</projectUrl>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  <description>Umbrella Xamarin binding === Store and sync data with the Firebase Realtime Database. Data is synced across all clients in realtime, and remains available when your app goes offline.</description>
+  <releaseNotes></releaseNotes>
+  <copyright>Not yet available</copyright>    
+  <tags>Xamarin iOS</tags>
+  <dependencies>
+    <dependency id="DT.Xamarin.FirebaseAnalytics" version="0.0.2" />
+
+  </dependencies>
+  <references></references>
+  </metadata>
+  <files>
+    <file src="bin/Release/FirebaseDatabase.dll" target="lib/Xamarin.iOS" />
+  </files>
+</package>

@@ -29,26 +29,15 @@ let sampleNuspec = "nuspec.template.xml"
 let sampleXCodeProject = "xcode.template"
 
 let rootNamespace = "DreamTeam.Xamarin."
+let defaultPodVersion = "0.0.1"
 let rn = Environment.NewLine
-
-type PodDependencyNode = {Name:string; Children:List<PodDependencyNode>}
-
-type Podspec = JsonProvider<"./podspec.sample.json">
-
+let mutable isVerboseOutput = false
 let firstRegexMatch input (regex:string) = 
      Regex.Matches(input, regex)
         |> Seq.cast<Match>
         |> Seq.head
         |> fun m -> m.Groups.Item(1)
         |> fun g -> g.Value
-
-let getPodSpecUrl podName =
-    let pageUrl = "http://cocoapods.org/pods/"+podName
-    let webClient = new WebClient();
-    let podPage = webClient.DownloadString(pageUrl);
-    // printfn "%d" podPage.Length
-    firstRegexMatch podPage @"<a href=""(http.+\.podspec\.json)"">"
-
 let (|Prefix|_|) (p:string) (s:string) =
     if s.StartsWith(p) then
         Some(s.Substring(p.Length))
@@ -64,12 +53,47 @@ let freshDirectory d =
     DeleteDir d
     CreateDir d
 
+let execProcess setup =
+     let processOutLog = if isVerboseOutput then trace else ignore
+     let logError = if isVerboseOutput then traceError else ignore
+     ExecProcessWithLambdas setup System.TimeSpan.MaxValue (not isVerboseOutput) logError processOutLog
+
 let unzipWithTar targetFolder zipFile =
     freshDirectory targetFolder
-    let result = ExecProcess (fun info ->  
+    let result = execProcess (fun info ->  
        info.FileName <- "tar"
-       info.Arguments <- "-xzf " + zipFile + " -C " + targetFolder) System.TimeSpan.MaxValue
+       info.Arguments <- "-xzf " + zipFile + " -C " + targetFolder)
     if result <> 0 then failwithf "Error during tar -xzf  %s -C %s" zipFile targetFolder
+
+let sbLine (line:String) (sb:System.Text.StringBuilder) =
+    sb.AppendLine(line)
+
+// type PodDependencyNode = {Name:string; Children:List<PodDependencyNode>}
+
+type Podspec = JsonProvider<"./podspec.sample.json">
+
+[<CustomEquality; CustomComparison>] 
+type Pod = { name : string; 
+            spec: Podspec.Root; 
+            mutable dependencies: Pod list; 
+            mutable custom: bool;
+            mutable empty: bool; }
+            
+            member x.IsUmbrella =
+                    x.empty && not (List.isEmpty x.dependencies)
+            override x.Equals(y) =
+                match y with
+                | :? Pod as p -> (x.name = p.name)
+                | _ -> false
+
+            override x.GetHashCode() = hash x.name
+
+            interface System.IComparable with
+                member x.CompareTo y =
+                    match y with
+                    | :? Pod as p -> compare x.name p.name
+                    | _ -> invalidArg "yobj" "cannot compare values of different types"                                    
+
 
 let podSpecFileName podName =
     Path.Combine(podsFolder, podName+".json")   
@@ -84,28 +108,34 @@ let specForPod podName =
 
 let podSubSpec (pod:string)=
     if pod.Contains("/") then pod.Substring(pod.IndexOf("/") + 1) else "" 
+            
+let podByName pod =
+    let spec = specForPod pod
+    { name = pod; spec = spec; dependencies = []; custom=false; empty=false }
 
-let sbLine (line:String) (sb:System.Text.StringBuilder) =
-    sb.AppendLine(line)
+
+let getPodSpecUrl podName =
+    let pageUrl = "http://cocoapods.org/pods/"+podName
+    let webClient = new WebClient();
+    let podPage = webClient.DownloadString(pageUrl);
+    firstRegexMatch podPage @"<a href=""(http.+\.podspec\.json)"">"
 
 let downloadPodSpec (pod:string) =
-    tracefn "Downloading details for pod %s" pod
     let podName = podNameWithoutSubSpec pod
-    let podUrl = getPodSpecUrl podName
-                        |> makeRawGithubUrl
-    // tracefn "Loading spec from %s" podUrl
+    let podUrl = getPodSpecUrl podName |> makeRawGithubUrl
     let podSpecJson = (new WebClient()).DownloadString(podUrl)
     let podSpecFile = podSpecFileName podName
-    // tracefn "Saving spec to %s" podSpecFile
     File.WriteAllText(podSpecFile, podSpecJson);
     specForPod podName
+
 let private fileSafePodName (pod:string) =
-    pod.Replace("/", "_").Replace("+", "_").Replace("-","_")
+    pod.Replace("/", ".").Replace("+", "_").Replace("-","_")
 
 let podBindingsFolder podName =
     let safePodName = fileSafePodName podName
     Path.Combine(bindingsFolder, safePodName)
-let downloadPod2 podName =
+
+let downloadPod podName =
     let safePodName = fileSafePodName podName
     let targetFolder = System.IO.Path.Combine(podsFolder, safePodName, "XCode")
     freshDirectory targetFolder
@@ -113,36 +143,35 @@ let downloadPod2 podName =
     let podFile = Path.Combine(targetFolder, "Podfile")
     let replacements = [ "@PodName@", podName]
     processTemplates replacements [podFile]
-    let result = ExecProcess (fun info ->  
+    let result = execProcess (fun info ->  
                                 info.FileName <- "pod"
                                 info.WorkingDirectory <- targetFolder
-                                info.Arguments <- "install") System.TimeSpan.MaxValue
+                                info.Arguments <- "install")
     if result <> 0 then failwith "Error during pod install" 
     let expandFolder = Path.Combine(targetFolder, "Pods", (podNameWithoutSubSpec podName))
     expandFolder    
 
-let podDependencies (podSpec: Podspec.Root) (podName:string) =
-    let subSpec = podSubSpec podName
-    if String.IsNullOrEmpty subSpec then
-        let dependenciesOptional = podSpec.JsonValue.TryGetProperty "dependencies"
-        if dependenciesOptional.IsSome then
-            dependenciesOptional.Value.Properties() 
-                |> Seq.map (fun (k,v) -> k)
-                |> Seq.toList
-        else
-            []
-    else    
-        // tracefn "looking for deps for %s subspec" subSpec
-        let podSubSpec = podSpec.Subspecs |> Seq.pick (fun s -> if s.Name = subSpec then Some(s) else None )
-        let dependenciesOptional = podSubSpec.JsonValue.TryGetProperty "dependencies"
-        if dependenciesOptional.IsSome then
-                    dependenciesOptional.Value.Properties() 
-                        |> Seq.map (fun (k,v) -> k)
-                        |> Seq.toList
-                else
-                    []
+// let podDependencies (podSpec: Podspec.Root) (podName:string) =
+//     let subSpec = podSubSpec podName
+//     if String.IsNullOrEmpty subSpec then
+//         let dependenciesOptional = podSpec.JsonValue.TryGetProperty "dependencies"
+//         if dependenciesOptional.IsSome then
+//             dependenciesOptional.Value.Properties() 
+//                 |> Seq.map (fun (k,v) -> k)
+//                 |> Seq.toList
+//         else
+//             []
+//     else    
+//         let podSubSpec = podSpec.Subspecs |> Seq.pick (fun s -> if s.Name = subSpec then Some(s) else None )
+//         let dependenciesOptional = podSubSpec.JsonValue.TryGetProperty "dependencies"
+//         if dependenciesOptional.IsSome then
+//                     dependenciesOptional.Value.Properties() 
+//                         |> Seq.map (fun (k,v) -> k)
+//                         |> Seq.toList
+//                 else
+//                     []
 
-let private alwaysArray (json: JsonValue) propertyName = //todo extension method?
+let private alwaysArray (json: JsonValue) propertyName = 
     let j = json.TryGetProperty propertyName
     if j.IsSome then
         match j.Value with
@@ -152,7 +181,9 @@ let private alwaysArray (json: JsonValue) propertyName = //todo extension method
     else
         [||]
 
-let generateLinkWith (podSpec:Podspec.Root) (podName:string) =
+let generateLinkWith pod =
+   let podName = pod.name
+   let podSpec = pod.spec
    let safePodName = fileSafePodName podName 
    let linkWithContent = new System.Text.StringBuilder()
    linkWithContent.AppendLine("using ObjCRuntime;") |> ignore
@@ -178,7 +209,6 @@ let isFrameworkSpec (podSpec: Podspec.Root) =
 
 
 let podHeadersLocation (podName:string) = 
-    // tracefn "Get headers location for pod %s " podName
     let truePodName = podNameWithoutSubSpec podName
     let podSubSpec = podSubSpec podName
     let podSpec = specForPod podName
@@ -195,10 +225,11 @@ let podHeadersLocation (podName:string) =
             traceFAKE "Can't get headers location for a pod that is not providing framework %s" podName        
             ""
 
-let podFrameworkLocation (podName:string) = 
+let podFrameworkLocation pod = 
+    let podName = pod.name
     let truePodName = podNameWithoutSubSpec podName
     let podSubSpec = podSubSpec podName
-    let podSpec = specForPod podName
+    let podSpec = pod.spec
     let podFolder = fileSafePodName podName
     let isFramework = isFrameworkSpec podSpec
     if isFramework then
@@ -214,30 +245,51 @@ let podFrameworkLocation (podName:string) =
             traceFAKE "Did not guess framework location for a pod that is not providing framework %s" podName        
             ""
 
-let getDependentHeadersLocations (podSpec: Podspec.Root) (podName:string)= 
+let podDependencies (pod:Pod) =
+    let subSpec = podSubSpec pod.name
+    if String.IsNullOrEmpty subSpec then
+        let dependenciesOptional = pod.spec.JsonValue.TryGetProperty "dependencies"
+        if dependenciesOptional.IsSome then
+            dependenciesOptional.Value.Properties() 
+                |> Seq.map (fun (k,v) -> podByName k)
+                |> Seq.toList
+        else
+            []
+    else    
+        let podSubSpec = pod.spec.Subspecs |> Seq.pick (fun s -> if s.Name = subSpec then Some(s) else None )
+        let dependenciesOptional = podSubSpec.JsonValue.TryGetProperty "dependencies"
+        if dependenciesOptional.IsSome then
+                    dependenciesOptional.Value.Properties() 
+                        |> Seq.map (fun (k,v) -> podByName k)
+                        |> Seq.toList
+                else
+                    []
+let getDependentHeadersLocations pod =
+    let podName = pod.name
+    let podSpec = pod.spec
     let dependencyHeaders = new System.Text.StringBuilder()
-    let dependencies = podDependencies podSpec podName |> List.append [podName]
-    printfn "DEPS for headers %A" dependencies 
+    let dependencies = podDependencies pod |> List.append [pod]
     match dependencies with 
         | [] -> [||]
-        | _ ->  dependencies |> Seq.filter(fun k ->
-                                            let path = podHeadersLocation k
-                                            tracefn "probing for dep headers %s" path
+        | _ ->  dependencies |> Seq.filter(fun subPod ->
+                                            let path = podHeadersLocation subPod.name
                                             Directory.Exists(path)
-                                            )    
+                                           )    
                                         |> Seq.map podFrameworkLocation
                                         |> Seq.toArray               
 
-let getDependenciesUsings (podSpec: Podspec.Root) (podName:string) = 
+let getDependenciesUsings pod = 
     let usings = new System.Text.StringBuilder()
-    let dependencies = podDependencies podSpec podName |> List.sort
-    dependencies |> Seq.iter(fun k ->
-                                let podNamespace = rootNamespace + fileSafePodName k
+    let dependencies = pod.dependencies |> List.filter (fun p -> not p.empty) |> List.sort
+    dependencies |> Seq.iter(fun subPod ->
+                                let podNamespace = rootNamespace + fileSafePodName subPod.name
                                 usings.AppendFormat("using {0};{1}", podNamespace, Environment.NewLine) |> ignore    
                             )    
     usings.ToString()               
 
-let copyBinaryAndGenerateLinkWith podName (podSpec: Podspec.Root) podExpandedFolder = 
+let copyBinaryAndGenerateLinkWith pod podExpandedFolder =
+    let podName = pod.name
+    let podSpec = pod.spec
     let fwName = podSpec.VendoredFrameworks.[0]
     let fwBinaryName = firstRegexMatch fwName @".+/(.+?)\.framework"
     let binaryName = Path.Combine(podExpandedFolder, fwName, fwBinaryName)
@@ -246,7 +298,7 @@ let copyBinaryAndGenerateLinkWith podName (podSpec: Podspec.Root) podExpandedFol
     let dotAName = Path.Combine(bindingFolder, podName + ".a");
     CopyFile dotAName binaryName 
     let linkWithFile = Path.Combine(bindingFolder, podName + ".linkwith.cs");
-    let linkerSuggestions = generateLinkWith podSpec podName
+    let linkerSuggestions = generateLinkWith pod
     File.WriteAllText(linkWithFile, linkerSuggestions)
 
 let fixShapieBugs structsFile apiDefinitionFile =
@@ -256,11 +308,13 @@ let fixShapieBugs structsFile apiDefinitionFile =
                      ]
     processTemplates baseTypes [structsFile]
 
-let generateCSharpBindingsForFramework podName (podSpec: Podspec.Root) podExpandedFolder =
+let generateCSharpBindingsForFramework pod podExpandedFolder =
+    let podName = pod.name
+    let podSpec = pod.spec
     let bindingFolder = podBindingsFolder podName
     let fwName = podSpec.VendoredFrameworks.[0]    
     let fwBinaryName = firstRegexMatch fwName @".+/(.+?)\.framework"
-    let iosSdkInSharpie = "iphoneos10.0" //todo detect from sharpie output
+    let iosSdkInSharpie = @"""iphoneos""" 
     let headersFolder = Path.Combine(podExpandedFolder, fwName, "Headers")
     let apiDefinitionFile = Path.Combine(bindingFolder, "ApiDefinitions.cs")
     let structsAndEnumsFile = Path.Combine(bindingFolder, "StructsAndEnums.cs")
@@ -268,17 +322,15 @@ let generateCSharpBindingsForFramework podName (podSpec: Podspec.Root) podExpand
         let rootHeaderFile = Path.Combine(headersFolder, fwBinaryName + ".h")
         let allHeaders = Path.Combine(headersFolder, "*.h")
         let podNamespace = rootNamespace + fileSafePodName podName
-        let dependenciesHeaders = getDependentHeadersLocations podSpec podName
-        let depHeadersOption = if dependenciesHeaders.Length > 0 then (" " + String.Join(" ", getDependentHeadersLocations podSpec podName)) else "" 
-        printfn "DEPENDENT HEADERS: %s" depHeadersOption
+        let dependenciesHeaders = getDependentHeadersLocations pod
+        let depHeadersOption = if dependenciesHeaders.Length > 0 then (" " + String.Join(" ", dependenciesHeaders )) else "" 
         let sharpieArgs =  "-tlm-do-not-submit bind -output " + bindingFolder + " -sdk "+ iosSdkInSharpie + " -scope " + allHeaders + " " 
                             + rootHeaderFile + " -n " + podNamespace + " -c -I" + headersFolder +  depHeadersOption + " -v"
-        printfn "Running sharpie %s" sharpieArgs                            
-        let result = ExecProcess (fun info ->  
+        let result = execProcess (fun info ->  
                                     info.FileName <- "sharpie"
-                                    info.Arguments <- sharpieArgs) System.TimeSpan.MaxValue
+                                    info.Arguments <- sharpieArgs)
         if result <> 0 then failwithf "Error during sharpie %s " sharpieArgs
-        let additionalUsings = getDependenciesUsings podSpec podName
+        let additionalUsings = getDependenciesUsings pod
         fixShapieBugs structsAndEnumsFile apiDefinitionFile
         if not <| String.IsNullOrWhiteSpace additionalUsings then
             let apiDefinition = File.ReadAllText(apiDefinitionFile)
@@ -290,13 +342,14 @@ let generateCSharpBindingsForFramework podName (podSpec: Podspec.Root) podExpand
         printfn "Empty files generated for API definition since there are no headers in %s" podName 
 
 
-let generateCSharpBindingsForCustom podName (podSpec: Podspec.Root) =
+let generateCSharpBindingsForCustom pod =
+    let podName = pod.name
     let bindingFolder = podBindingsFolder podName
     let safePodName = fileSafePodName podName
     let truePodName = podNameWithoutSubSpec podName
     let podXCodeDir = Path.Combine(podsFolder, safePodName, "XCode")
     let buildOutDir = Path.Combine(podXCodeDir, "build-out")
-    let iosSdkInSharpie = "iphoneos10.0" //todo detect from sharpie output
+    let iosSdkInSharpie = @"""iphoneos""" 
     let headersFolder = buildOutDir
     let possibleUmbrellaHeader = Path.Combine(headersFolder, truePodName + ".h")
     let mainHeader = if File.Exists possibleUmbrellaHeader then
@@ -311,33 +364,31 @@ let generateCSharpBindingsForCustom podName (podSpec: Podspec.Root) =
     let podPublic = "-I" + Path.Combine(podXCodeDir, "Pods", "Headers", "Public")
     let dependenciesHeaders = [podPrivate; podPublic] |> Seq.toArray
     let depHeadersOption = if dependenciesHeaders.Length > 0 then (" " + String.Join(" ", dependenciesHeaders)) else "" 
-    printfn "DEPENDENT HEADERS: %s" depHeadersOption
     let podNamespace = rootNamespace + safePodName
     let sharpieArgs =  "-tlm-do-not-submit bind -output " + bindingFolder + " -sdk "+ iosSdkInSharpie + " -scope " + headersFolder 
                              + " " + mainHeader 
                              + " -n " + podNamespace + " -c -I" + headersFolder +  depHeadersOption + " -v"
-    printfn "Running sharpie %s" sharpieArgs                            
-    let result = ExecProcess (fun info ->  
+    let result = execProcess (fun info ->  
                                 info.FileName <- "sharpie"
-                                info.Arguments <- sharpieArgs) System.TimeSpan.MaxValue
+                                info.Arguments <- sharpieArgs)
     if result <> 0 then failwithf "Error during sharpie %s " sharpieArgs
     let apiDefinitionFile = Path.Combine(bindingFolder, "ApiDefinitions.cs")
     let structsAndEnumsFile = Path.Combine(bindingFolder, "StructsAndEnums.cs")
     fixShapieBugs structsAndEnumsFile apiDefinitionFile
-    //todo insert dependencies namespaces here
-    trace "7"
 
 let getPackageVersionForPod (podSpec: Podspec.Root) =
     let realVersion = (podSpec.JsonValue.GetProperty "version").AsString() + ".0"
-    let overrideVersion = getBuildParamOrDefault "VERSION" "0.0.1"// ""
+    let overrideVersion = getBuildParamOrDefault "VERSION" defaultPodVersion
     if not <| String.IsNullOrEmpty(overrideVersion) then overrideVersion else realVersion
 
 let buildCSProjReferences podDependencies =
     let references = new System.Text.StringBuilder();
-    podDependencies |> List.iter (fun subPod -> 
+    podDependencies |> List.filter (fun pod -> not pod.empty) 
+                    |> List.iter (fun pod ->
+                                    let subPod = pod.name 
                                     let dllName = fileSafePodName subPod
                                     let packageName = "DT.Xamarin." + fileSafePodName subPod
-                                    let subPodSpec = specForPod subPod
+                                    let subPodSpec = pod.spec
                                     let subPodVersion =  getPackageVersionForPod subPodSpec
                                     references.AppendFormat(@"    <Reference Include=""{0}"">{1}", dllName, rn) |> ignore
                                     references.AppendFormat(@"      <HintPath>..\{0}\{1}.{2}\lib\{3}\{4}.dll</HintPath>{5}", packagesTempDir, packageName, subPodVersion, packagesTargetFramework, dllName, rn) 
@@ -345,10 +396,12 @@ let buildCSProjReferences podDependencies =
                                  )
     references.ToString()
 
-let generateCSProject podName (podSpec: Podspec.Root) podExpandedFolder =
+let generateCSProject (pod: Pod) podExpandedFolder =
+    let podName = pod.name
+    let podSpec = pod.spec
     let safePodName = fileSafePodName podName
     let podNamespace = rootNamespace + safePodName
-    let dependencies = podDependencies podSpec podName
+    let dependencies = pod.dependencies
     let references = buildCSProjReferences dependencies
     let replacements = 
             [ "@ProjectGuid@", Guid.NewGuid().ToString("B").ToUpper()
@@ -359,61 +412,62 @@ let generateCSProject podName (podSpec: Podspec.Root) podExpandedFolder =
               "@Description@", "Xamarin binding ===" + podSpec.Description.Replace("\r"," ").Replace("\n"," ") ]
     let bindingFolder = podBindingsFolder podName
     let dllName = safePodName
-    let csProjectFile = Path.Combine(bindingFolder, dllName + ".csproj")
-    let assemblyInfoFolder = Path.Combine(bindingFolder, "Properties")
-    let assemblyInfoFile = Path.Combine(assemblyInfoFolder,  "AssemblyInfo.cs")
     let nuspecFile = Path.Combine(bindingFolder, safePodName + ".nuspec")
-    CreateDir assemblyInfoFolder 
-    CopyFile csProjectFile sampleCSProject
-    CopyFile assemblyInfoFile sampleAssemblyInfo
     CopyFile nuspecFile sampleNuspec
-    processTemplates replacements [csProjectFile; assemblyInfoFile]
+    if not <| pod.IsUmbrella then
+        let csProjectFile = Path.Combine(bindingFolder, dllName + ".csproj")
+        let assemblyInfoFolder = Path.Combine(bindingFolder, "Properties")
+        let assemblyInfoFile = Path.Combine(assemblyInfoFolder,  "AssemblyInfo.cs")
+        CreateDir assemblyInfoFolder 
+        CopyFile csProjectFile sampleCSProject
+        CopyFile assemblyInfoFile sampleAssemblyInfo
+        processTemplates replacements [csProjectFile; assemblyInfoFile]
+        if not <| List.isEmpty dependencies then
+            let packagesConfig = Path.Combine(bindingFolder, "packages.config")
+            CopyFile packagesConfig samplePackagesConfig
+            let pb = new System.Text.StringBuilder()
+            dependencies |> List.iter (fun subPod -> 
+                                        let subPodSpec = subPod.spec
+                                        let subPodVersion =  getPackageVersionForPod subPodSpec
+                                        let packageName = "DT.Xamarin." + fileSafePodName subPod.name
+                                        pb.AppendFormat(@"<package id=""{0}"" version=""{1}"" targetFramework=""{2}"" />{3}", packageName, subPodVersion, packagesTargetFramework ,  Environment.NewLine) |> ignore
+                                    )
+            processTemplates ["@Packages@", pb.ToString() ] [packagesConfig]                    
+        
     let depBuilder = new System.Text.StringBuilder();
     match dependencies with 
-        | [] -> tracefn "No dependencies for %s" podName
-        | _ ->  dependencies 
-                |> Seq.iter (fun (subPod) -> 
-                                let subPodSpec = specForPod subPod
+        | [] -> ()
+        | _ ->  dependencies
+                |> List.filter (fun subPod -> subPod.IsUmbrella || not subPod.empty) 
+                |> List.iter (fun (subPod) -> 
+                                let subPodSpec = subPod.spec
                                 let subPodVersion =  getPackageVersionForPod subPodSpec
-                                let packageName = "DT.Xamarin." + fileSafePodName subPod
+                                let packageName = "DT.Xamarin." + fileSafePodName subPod.name
                                 depBuilder.AppendFormat(@"    <dependency id=""{0}"" version=""{1}"" />{2}", packageName, subPodVersion, Environment.NewLine) |> ignore
                              )
+    let files = if pod.IsUmbrella then "" else String.Format(@"<file src=""bin/Release/{0}.dll"" target=""lib/{1}"" />", dllName, packagesTargetFramework)                              
     let nugetParams = 
             [ "@PackageId@", "DT.Xamarin." + fileSafePodName podName
               "@Version@", getPackageVersionForPod podSpec 
               "@Authors@", "DreamTeam Mobile"
               "@Summary@", podSpec.Summary
-              "@Description@", "Xamarin binding === " + podSpec.Description
+              "@Description@", "Umbrella Xamarin binding === " + podSpec.Description
               "@ProjectUrl@", podSpec.Homepage
               "@ReleaseNotes@", ""
-              "@DllName@", dllName
+              "@Files@", files
               "@Dependencies@", depBuilder.ToString()
                ]
     processTemplates nugetParams [nuspecFile]
-    if not <| List.isEmpty dependencies then
-        let packagesConfig = Path.Combine(bindingFolder, "packages.config")
-        CopyFile packagesConfig samplePackagesConfig
-        let pb = new System.Text.StringBuilder()
-        dependencies |> List.iter (fun subPod -> 
-                                      let subPodSpec = specForPod subPod
-                                      let subPodVersion =  getPackageVersionForPod subPodSpec
-                                      let packageName = "DT.Xamarin." + fileSafePodName subPod
-                                      pb.AppendFormat(@"<package id=""{0}"" version=""{1}"" targetFramework=""{2}"" />{3}", packageName, subPodVersion, packagesTargetFramework ,  Environment.NewLine) |> ignore
-                                  )
-        processTemplates ["@Packages@", pb.ToString() ] [packagesConfig]                    
-    trace ""
+    ()
 
 let rec downloadPodsRecursive (podName:string) = 
     let podSpec = downloadPodSpec podName
-    let dependencies = podDependencies podSpec podName
+    let tempPod = {name = podName; spec = podSpec; dependencies = []; custom = false; empty = false }
+    let dependencies = podDependencies tempPod
     match dependencies with 
-        | [] -> tracefn "No dependencies for %s" podName
-        | _ ->  dependencies |> Seq.iter (fun (k) -> 
-                                    printfn "Dependency %s found for %s" k podName
-                                    downloadPodsRecursive k
-                                    )
-
-
+        | [] -> ignore()
+        | _ ->  dependencies |> Seq.iter (fun p-> downloadPodsRecursive p.name) |> ignore
+    
 let compileNonFrameworkProjectForArchitecure podName sim podXCodeDir buildOutDir =
     //see https://gist.github.com/madhikarma/09e553c508f870639570
     let architectureArgs = if sim then @" -arch i386 -arch x86_64 -sdk ""iphonesimulator""" else @" -sdk ""iphoneos"""
@@ -423,10 +477,10 @@ let compileNonFrameworkProjectForArchitecure podName sim podXCodeDir buildOutDir
                     + " ONLY_ACTIVE_ARCH=NO"
                     + " SYMROOT=" + buildOutDir 
                     + " CONFIGURATION_BUILD_DIR=" + buildOutDir
-    let result = ExecProcess (fun info ->  
+    let result = execProcess (fun info ->  
        info.FileName <- "xcodebuild"
        info.WorkingDirectory <- podXCodeDir
-       info.Arguments <- xcodeArgs) System.TimeSpan.MaxValue
+       info.Arguments <- xcodeArgs)
     if result <> 0 then failwithf "Error during xcodebuild %s" xcodeArgs
     let architectureExt = if sim then ".sim.a" else ".device.a"
     let binaryFile = "lib" + podNameWithoutSubSpec podName + ".a"
@@ -437,108 +491,109 @@ let compileNonFrameworkProjectForArchitecure podName sim podXCodeDir buildOutDir
         CopyFile binaryFinalPath binaryPath
         binaryFinalPath
     else
-        traceFAKE "VERIFY: POD %s most probably doesn't have any binaries generated" podName
+        traceFAKE "VERIFY: pod %s doesn't have any binaries generated for config %s" podName architectureArgs
         ""
 
 let createUniversalLib file1 file2 outFile =
     //see https://gist.github.com/madhikarma/09e553c508f870639570
     //lipo -create -output "${HOME}/Desktop/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}" "${SRCROOT}/build/Release-iphoneos/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}" "${SRCROOT}/build/Release-iphonesimulator/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}"
     let lipoArgs = "-create -output " + outFile + " " + file1 + " " + file2
-    let result = ExecProcess (fun info ->  
+    let result = execProcess (fun info ->  
        info.FileName <- "lipo"
-       info.Arguments <- lipoArgs) System.TimeSpan.MaxValue
+       info.Arguments <- lipoArgs)
     if result <> 0 then failwithf "Error during lipo %s" lipoArgs
 
-let compileNonFrameworkProject podName (podSpec: Podspec.Root) =
+let compileNonFrameworkProject pod =
+    let podName = pod.name 
+    let podSpec = pod.spec
     let safePodName = fileSafePodName podName
     let podXCodeDir = Path.Combine(podsFolder, safePodName, "XCode")
     let buildOutDir = Path.Combine(podXCodeDir, "build-out")
     freshDirectory buildOutDir
     let absOutDir = (DirectoryInfo buildOutDir).FullName
+    let bindingFolder = podBindingsFolder podName
+    freshDirectory bindingFolder
     let armPath = compileNonFrameworkProjectForArchitecure podName false podXCodeDir absOutDir
     if not <| String.IsNullOrEmpty armPath then
         let simPath = compileNonFrameworkProjectForArchitecure podName true podXCodeDir absOutDir
         let binaryFileName = "lib" + podNameWithoutSubSpec podName + ".a"
         let binaryPath = Path.Combine(buildOutDir, binaryFileName)
         createUniversalLib armPath simPath binaryPath
-        let bindingFolder = podBindingsFolder podName
         let safePodName = fileSafePodName podName
-        freshDirectory bindingFolder
         let dotAName = Path.Combine(bindingFolder, safePodName + ".a");
         CopyFile dotAName binaryPath 
         let linkWithFile = Path.Combine(bindingFolder, safePodName + ".linkwith.cs");
-        let linkerSuggestions = generateLinkWith podSpec podName
+        let linkerSuggestions = generateLinkWith pod
         File.WriteAllText(linkWithFile, linkerSuggestions)
         true
     else
         traceFAKE "VERIFY: POD %s most probably doesn't have any binaries generated" podName
         false
 
-let generateBindingForPod podName = 
-    tracefn "generating bindings for pod %s" podName
-    let podSpec = specForPod podName
-    // let dependencies = podDependencies podSpec podName
-    // match dependencies with 
-    //     | [] -> tracefn "No dependencies for %s" podName
-    //     | _ ->  dependencies |> Seq.iter (fun (k) -> 
-    //                                 printfn "Dependency %s" k
-    //                                 generateBindingForPod k
-    //                                 )
-    let podExpandedFolder = downloadPod2 podName
-    let vendoredFrameworkOptional = podSpec.JsonValue.TryGetProperty "vendored_frameworks"
-    let isFramework = vendoredFrameworkOptional.IsSome 
+let generateBindingForPod (pod:Pod) = 
+    let podExpandedFolder = downloadPod pod.name
+    let vendoredFrameworkOptional = pod.spec.JsonValue.TryGetProperty "vendored_frameworks"
+    let isFramework = vendoredFrameworkOptional.IsSome
+    pod.custom <- not <| isFramework 
+    tracefn "GENERATING BINDING FOR %s" pod.name
     if isFramework then
-        copyBinaryAndGenerateLinkWith podName podSpec podExpandedFolder
-        generateCSharpBindingsForFramework podName podSpec podExpandedFolder
-        generateCSProject podName podSpec podExpandedFolder
-        true
+        copyBinaryAndGenerateLinkWith pod podExpandedFolder
+        generateCSharpBindingsForFramework pod podExpandedFolder
+        pod.empty <- false
+        generateCSProject pod podExpandedFolder
     else
-        traceFAKE "GENERATING BINDINGS FOR NON-FRAMEWORK COCOAPOD %s" podName
-        let producesBinary = compileNonFrameworkProject podName podSpec
+        tracefn "GENERATING BINDINGS FOR non-Framework pod %s" pod.name
+        let producesBinary = compileNonFrameworkProject pod
+        pod.empty <- not producesBinary
+        if pod.IsUmbrella then
+            tracefn "%s is an umbrella pod" pod.name
         if producesBinary then
-            generateCSharpBindingsForCustom podName podSpec
-            generateCSProject podName podSpec podExpandedFolder
-            true
-        else
-            false
-
-let rec addDependentPods (list:List<string>) (pod:string) = 
-    let spec = specForPod pod
-    list.Add pod
-    let dependencies = podDependencies spec pod 
-    dependencies |> Seq.iter (fun d -> addDependentPods list d)
+            generateCSharpBindingsForCustom pod 
+        if producesBinary || pod.IsUmbrella then
+            generateCSProject pod podExpandedFolder
 
 let private listIntersect l1 l2 =
     Set.intersect (Set.ofList l1) (Set.ofList l2) |> Set.toList
 
-let rec sortGraphRecursively source res =
-   match source with
-   | head :: tail ->
-            let pod = head
-            let spec = specForPod pod
-            let dependencies = podDependencies spec pod
-            let isEmpty = List.isEmpty dependencies
-            let allDepsResolved = List.isEmpty (listIntersect dependencies res)
-            if isEmpty || allDepsResolved then
-                let sourceCopy = List.except [pod] source
-                let resCopy = List.append [pod] res
-                sortGraphRecursively sourceCopy resCopy
-            else
-                res
-   | [] -> res
+let private listCopy l1 =
+    l1 |> Seq.ofList |> List.ofSeq
 
-let sortDependencyGraph all =
-    let sortedList = sortGraphRecursively all List.empty
-    sortedList
 
+let sortGraphIteration source res = 
+   let mutable resolved = listCopy res
+   for pod in source do 
+      if not <| List.contains pod resolved  then
+        let dependencies = pod.dependencies
+        let noDependencies = List.isEmpty dependencies
+        let allDepsResolved = Set.isEmpty (Set.difference (Set.ofList dependencies) (Set.ofList resolved))
+        if noDependencies || allDepsResolved then //resolve pod
+            resolved <- List.append resolved [pod]
+            ()
+   resolved
+
+let sortDependencyGraph all = //there is a better way
+    let mutable resolvedPods = List.empty<Pod>
+    let allCopy = all |> Seq.ofList |> List.ofSeq
+    for i in all do
+        resolvedPods <- sortGraphIteration allCopy resolvedPods
+    resolvedPods
+
+                    
+let rec addDependentPods (list:List<Pod>) (pod:Pod) = 
+    list.Add pod
+    let dependencies = podDependencies pod
+    dependencies |> Seq.iter (fun d -> addDependentPods list d)
+    pod.dependencies <- dependencies 
+    
 let buildDependencyGraph podName =
-    let allPods = new List<string>()
-    addDependentPods allPods podName
+    let pod = podByName podName
+    let allPods = new List<Pod>()
+    addDependentPods allPods pod
     let allPodsUnique = allPods |> Seq.distinct |> List.ofSeq
-    printfn "List of pods: %A" allPodsUnique
+    printfn "List of pods: %A" (allPodsUnique |> List.map (fun p -> p.name))
     let tree = sortDependencyGraph allPodsUnique
-    printfn "Sorted dependency graph: %A" tree
-    tree
+    printfn "Sorted dependency graph: %A" (tree |> List.map (fun p -> p.name))
+    tree    
 
 let generateBuildScript podName depGraph =
     let buildScriptFileName = Path.Combine(bindingsFolder, (fileSafePodName podName) + ".build.sh")
@@ -552,19 +607,21 @@ let generateBuildScript podName depGraph =
     script.AppendLine("#!/bin/bash") |> sbLine "set -e" |> ignore
     script.AppendFormat("nuget sources Remove -Name {0} || true {1}", packagesSourceName, rn)  |> ignore
     script.AppendFormat("nuget sources Add -Name {0} -Source {1}{2}", packagesSourceName, absDirPath, rn)  |> ignore
-    depGraph |> List.iter (fun subPod ->
+    depGraph |> List.iter (fun pod ->
+                            let subPod = pod.name
                             script.AppendFormat(@"echo ""------------------------- Processing Binding {0}...""{1}", subPod, rn) |> ignore
                             script.AppendFormat(@"pushd {0}{1}", fileSafePodName subPod, rn) |> sbLine "rm -f *.nupkg" |>  ignore
-                            script.AppendFormat(@"[ -f packages.config ] && nuget restore -source {0} -PackagesDirectory ../{1} || echo ""no restore required for this project""{2}", packagesSourceName, packagesTempDir, rn) |> ignore
-                            script.AppendLine("msbuild /t:Clean") |> ignore
-                            script.AppendFormat(@"msbuild /p:Configuration=Release{0}", rn) |> ignore
+                            if not pod.IsUmbrella then
+                                script.AppendFormat(@"[ -f packages.config ] && nuget restore -source {0} -PackagesDirectory ../{1} || echo ""no restore required for this project""{2}", packagesSourceName, packagesTempDir, rn) |> ignore
+                                script.AppendLine("msbuild /t:Clean") |> ignore
+                                script.AppendFormat(@"msbuild /p:Configuration=Release{0}", rn) |> ignore
                             script.AppendFormat(@"nuget pack *.nuspec{0}", rn) |> ignore
                             script.AppendFormat(@"cp -f *.nupkg ../{0}/ {1}",rawDir, rn) |>  sbLine "popd" |> sbLine "nuget init packages-raw packages-good" |> ignore 
                             script.AppendFormat(@"nuget list -source {0} {1}",packagesSourceName, rn) 
                                 |> sbLine "nuget init packages-raw packages-good"
                                 |> ignore 
                           )
-    script.AppendFormat("nuget sources Remove -Name {0}{1}", packagesSourceName, rn) |> ignore
+    // script.AppendFormat("nuget sources Remove -Name {0}{1}", packagesSourceName, rn) |> ignore
     if File.Exists buildScriptFileName then 
         File.Delete buildScriptFileName
     File.WriteAllText(buildScriptFileName, script.ToString())
@@ -582,6 +639,9 @@ Target "CleanBindings" ( fun()->
     File.WriteAllText(Path.Combine(bindingsFolder, "empty.txt"), "")
 );
 
+let generateUmbrellaNugetPackages (pods: Pod list) =
+    ()
+
 Target "Bind" ( fun()->
     let podName = getBuildParamOrDefault "POD" ""
     if String.IsNullOrEmpty(podName) then
@@ -589,8 +649,13 @@ Target "Bind" ( fun()->
     else
         downloadPodsRecursive podName
         let mapping = buildDependencyGraph podName
-        let nonEmptyPods = mapping |> List.filter generateBindingForPod
-        generateBuildScript podName nonEmptyPods |> ignore
+        mapping |> List.iter generateBindingForPod
+        let valuablePods = mapping |> List.filter (fun p-> p.IsUmbrella || (not p.empty))
+        let umbrellaPods = mapping |> List.filter ( fun p -> p.IsUmbrella)    
+        let u = (umbrellaPods |> List.map (fun p -> p.name))
+        printfn "Umbrella packages will be generated for these pods %A" u
+        generateUmbrellaNugetPackages umbrellaPods
+        generateBuildScript podName valuablePods |> ignore
 );
 
 // start build

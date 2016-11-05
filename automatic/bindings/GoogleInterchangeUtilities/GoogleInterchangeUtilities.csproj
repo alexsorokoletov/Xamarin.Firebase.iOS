@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CB81173A-8662-4546-BE9D-F551CE37D345}</ProjectGuid>
+    <ProjectGuid>{67A04D62-86E8-47F0-92E6-5DF7AB4B46EE}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.GoogleInterchangeUtilities</RootNamespace>
@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GoogleSymbolUtilities">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.0.0.1\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.0.0.2\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
 

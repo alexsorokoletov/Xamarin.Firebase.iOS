@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{350D94C3-C61C-49BC-BB1D-73A808A115F0}</ProjectGuid>
+    <ProjectGuid>{23A84DF3-2247-490E-B085-7CB6B1A0D5F3}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.FirebaseCore</RootNamespace>
@@ -48,12 +48,12 @@
     <ObjcBindingNativeLibrary Include="FirebaseCore.a" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="GoogleToolboxForMac_NSData_zlib">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleToolboxForMac_NSData_zlib.0.0.1\lib\Xamarin.iOS\GoogleToolboxForMac_NSData_zlib.dll</HintPath>
+    <Reference Include="GoogleToolboxForMac.NSData_zlib">
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleToolboxForMac.NSData_zlib.0.0.2\lib\Xamarin.iOS\GoogleToolboxForMac.NSData_zlib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GoogleInterchangeUtilities">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleInterchangeUtilities.0.0.1\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleInterchangeUtilities.0.0.2\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
 

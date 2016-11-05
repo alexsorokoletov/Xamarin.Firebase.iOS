@@ -2,23 +2,23 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
   <id>DT.Xamarin.FirebaseAnalytics</id>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <authors>DreamTeam Mobile</authors>
   <owners>DreamTeam Mobile</owners>
   <summary>Firebase Analytics for iOS</summary>
   <licenseUrl>https://firebase.google.com</licenseUrl>
   <projectUrl>https://firebase.google.com</projectUrl>
   <requireLicenseAcceptance>false</requireLicenseAcceptance>
-  <description>Xamarin binding === Firebase Analytics is a free, out-of-the-box analytics solution that inspires actionable insights based on app usage and user engagement.</description>
+  <description>Umbrella Xamarin binding === Firebase Analytics is a free, out-of-the-box analytics solution that inspires actionable insights based on app usage and user engagement.</description>
   <releaseNotes></releaseNotes>
   <copyright>Not yet available</copyright>    
   <tags>Xamarin iOS</tags>
   <dependencies>
-    <dependency id="DT.Xamarin.FirebaseCore" version="0.0.1" />
-    <dependency id="DT.Xamarin.FirebaseInstanceID" version="0.0.1" />
-    <dependency id="DT.Xamarin.GoogleSymbolUtilities" version="0.0.1" />
-    <dependency id="DT.Xamarin.GoogleToolboxForMac_NSData_zlib" version="0.0.1" />
-    <dependency id="DT.Xamarin.GoogleInterchangeUtilities" version="0.0.1" />
+    <dependency id="DT.Xamarin.FirebaseCore" version="0.0.2" />
+    <dependency id="DT.Xamarin.FirebaseInstanceID" version="0.0.2" />
+    <dependency id="DT.Xamarin.GoogleSymbolUtilities" version="0.0.2" />
+    <dependency id="DT.Xamarin.GoogleToolboxForMac.NSData_zlib" version="0.0.2" />
+    <dependency id="DT.Xamarin.GoogleInterchangeUtilities" version="0.0.2" />
 
   </dependencies>
   <references></references>
