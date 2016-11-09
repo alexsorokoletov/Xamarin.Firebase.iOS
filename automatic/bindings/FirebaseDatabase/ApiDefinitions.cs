@@ -1,4 +1,5 @@
 using DreamTeam.Xamarin.FirebaseAnalytics;
+using DreamTeam.Xamarin.FirebaseCore;
 using System;
 using CoreFoundation;
 using Foundation;

@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
+rm -rf packages-tmp/*.*
+rm -rf packages-good/*.*
+rm -rf packages-raw/*.*
 nuget sources Remove -Name DT.Automatic || true 
 nuget sources Add -Name DT.Automatic -Source /Users/alex/work/dt/Xamarin.Firebase.iOS/automatic/bindings/packages-good
 echo "------------------------- Processing Binding GoogleSymbolUtilities..."

@@ -1,6 +1,6 @@
 ﻿using System;
+using DreamTeam.Xamarin.FirebaseDatabase;
 using UIKit;
-using Firebase.iOS;
 
 namespace FirebaseTestApp
 {
@@ -15,7 +15,7 @@ namespace FirebaseTestApp
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-            GIDSignIn.SharedInstance.UiDelegate = new LocalGIDSignInUIDelegate(this);
+            //GIDSignIn.SharedInstance.UiDelegate = new LocalGIDSignInUIDelegate(this);
             TestFirebaseDb();
         }
 
@@ -38,33 +38,33 @@ namespace FirebaseTestApp
 
         partial void OnGoogleSignInClick(Foundation.NSObject sender)
         {
-            GIDSignIn.SharedInstance.SignIn();
+            //GIDSignIn.SharedInstance.SignIn();
         }
 
-        public class LocalGIDSignInUIDelegate : GIDSignInUIDelegate
-        {
-            private UIViewController _root;
+        //public class LocalGIDSignInUIDelegate : GIDSignInUIDelegate
+        //{
+        //    private UIViewController _root;
 
-            public LocalGIDSignInUIDelegate(UIViewController root)
-            {
-                _root = root;
-            }
+        //    public LocalGIDSignInUIDelegate(UIViewController root)
+        //    {
+        //        _root = root;
+        //    }
 
-            public override void SignInDismissViewController(GIDSignIn signIn, UIViewController viewController)
-            {
-                _root.DismissViewController(true, null);
-            }
+        //    public override void SignInDismissViewController(GIDSignIn signIn, UIViewController viewController)
+        //    {
+        //        _root.DismissViewController(true, null);
+        //    }
 
-            public override void SignInPresentViewController(GIDSignIn signIn, UIViewController viewController)
-            {
-                _root.PresentViewController(viewController, true, null);
-            }
+        //    public override void SignInPresentViewController(GIDSignIn signIn, UIViewController viewController)
+        //    {
+        //        _root.PresentViewController(viewController, true, null);
+        //    }
 
-            public override void SignInWillDispatch(GIDSignIn signIn, Foundation.NSError error)
-            {
-                //base.SignInWillDispatch(signIn, error);
-            }
-        }
+        //    public override void SignInWillDispatch(GIDSignIn signIn, Foundation.NSError error)
+        //    {
+        //        //base.SignInWillDispatch(signIn, error);
+        //    }
+        //}
     }
 }
 

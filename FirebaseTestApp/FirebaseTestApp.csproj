@@ -25,11 +25,12 @@
     <MtouchProfiling>true</MtouchProfiling>
     <MtouchUseSGen>true</MtouchUseSGen>
     <MtouchUseRefCounting>true</MtouchUseRefCounting>
-    <MtouchLink>None</MtouchLink>
+    <MtouchLink>SdkOnly</MtouchLink>
     <MtouchArch>i386</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <DeviceSpecificBuild>false</DeviceSpecificBuild>
+    <MtouchSdkVersion>10.1</MtouchSdkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <Optimize>true</Optimize>
@@ -85,12 +86,34 @@
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
+    <MtouchExtraArgs></MtouchExtraArgs>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
+    <Reference Include="FirebaseInstanceID">
+      <HintPath>..\packages\DT.Xamarin.FirebaseInstanceID.0.0.2\lib\Xamarin.iOS\FirebaseInstanceID.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleSymbolUtilities">
+      <HintPath>..\packages\DT.Xamarin.GoogleSymbolUtilities.0.0.2\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleInterchangeUtilities">
+      <HintPath>..\packages\DT.Xamarin.GoogleInterchangeUtilities.0.0.2\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleToolboxForMac.NSData_zlib">
+      <HintPath>..\packages\DT.Xamarin.GoogleToolboxForMac.NSData_zlib.0.0.2\lib\Xamarin.iOS\GoogleToolboxForMac.NSData_zlib.dll</HintPath>
+    </Reference>
+    <Reference Include="FirebaseCore">
+      <HintPath>..\packages\DT.Xamarin.FirebaseCore.0.0.2\lib\Xamarin.iOS\FirebaseCore.dll</HintPath>
+    </Reference>
+    <Reference Include="FirebaseAnalytics">
+      <HintPath>..\packages\DT.Xamarin.FirebaseAnalytics.0.0.2\lib\Xamarin.iOS\FirebaseAnalytics.dll</HintPath>
+    </Reference>
+    <Reference Include="FirebaseDatabase">
+      <HintPath>..\packages\DT.Xamarin.FirebaseDatabase.0.0.2\lib\Xamarin.iOS\FirebaseDatabase.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
@@ -106,6 +129,7 @@
   <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -114,12 +138,6 @@
     <Compile Include="ViewController.designer.cs">
       <DependentUpon>ViewController.cs</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Firebase.iOS\Firebase.iOS.csproj">
-      <Project>{1A126D41-EF5D-4693-9409-C1AB98BD3B10}</Project>
-      <Name>Firebase.iOS</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GoogleService-Info.plist" />

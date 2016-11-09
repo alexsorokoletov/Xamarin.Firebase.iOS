@@ -27,8 +27,10 @@ let sampleAssemblyInfo = "assemblyinfo.template.xml"
 let samplePackagesConfig = "packages.template.xml"
 let sampleNuspec = "nuspec.template.xml"
 let sampleXCodeProject = "xcode.template"
+let sampleLinkerFile = "linker.template.cs"
 
 let rootNamespace = "DreamTeam.Xamarin."
+let rootPackageName = "DT.Xamarin."
 let defaultPodVersion = "0.0.1"
 let rn = Environment.NewLine
 let mutable isVerboseOutput = false
@@ -387,7 +389,7 @@ let buildCSProjReferences podDependencies =
                     |> List.iter (fun pod ->
                                     let subPod = pod.name 
                                     let dllName = fileSafePodName subPod
-                                    let packageName = "DT.Xamarin." + fileSafePodName subPod
+                                    let packageName = rootPackageName + fileSafePodName subPod
                                     let subPodSpec = pod.spec
                                     let subPodVersion =  getPackageVersionForPod subPodSpec
                                     references.AppendFormat(@"    <Reference Include=""{0}"">{1}", dllName, rn) |> ignore
@@ -414,6 +416,8 @@ let generateCSProject (pod: Pod) podExpandedFolder =
     let dllName = safePodName
     let nuspecFile = Path.Combine(bindingFolder, safePodName + ".nuspec")
     CopyFile nuspecFile sampleNuspec
+    let linkerFile = Path.Combine(bindingFolder, "Linker.cs")
+    CopyFile linkerFile sampleLinkerFile
     if not <| pod.IsUmbrella then
         let csProjectFile = Path.Combine(bindingFolder, dllName + ".csproj")
         let assemblyInfoFolder = Path.Combine(bindingFolder, "Properties")
@@ -429,7 +433,7 @@ let generateCSProject (pod: Pod) podExpandedFolder =
             dependencies |> List.iter (fun subPod -> 
                                         let subPodSpec = subPod.spec
                                         let subPodVersion =  getPackageVersionForPod subPodSpec
-                                        let packageName = "DT.Xamarin." + fileSafePodName subPod.name
+                                        let packageName = rootPackageName + fileSafePodName subPod.name
                                         pb.AppendFormat(@"<package id=""{0}"" version=""{1}"" targetFramework=""{2}"" />{3}", packageName, subPodVersion, packagesTargetFramework ,  Environment.NewLine) |> ignore
                                     )
             processTemplates ["@Packages@", pb.ToString() ] [packagesConfig]                    
@@ -442,12 +446,12 @@ let generateCSProject (pod: Pod) podExpandedFolder =
                 |> List.iter (fun (subPod) -> 
                                 let subPodSpec = subPod.spec
                                 let subPodVersion =  getPackageVersionForPod subPodSpec
-                                let packageName = "DT.Xamarin." + fileSafePodName subPod.name
+                                let packageName = rootPackageName + fileSafePodName subPod.name
                                 depBuilder.AppendFormat(@"    <dependency id=""{0}"" version=""{1}"" />{2}", packageName, subPodVersion, Environment.NewLine) |> ignore
                              )
     let files = if pod.IsUmbrella then "" else String.Format(@"<file src=""bin/Release/{0}.dll"" target=""lib/{1}"" />", dllName, packagesTargetFramework)                              
     let nugetParams = 
-            [ "@PackageId@", "DT.Xamarin." + fileSafePodName podName
+            [ "@PackageId@", rootPackageName + fileSafePodName podName
               "@Version@", getPackageVersionForPod podSpec 
               "@Authors@", "DreamTeam Mobile"
               "@Summary@", podSpec.Summary
@@ -458,6 +462,28 @@ let generateCSProject (pod: Pod) podExpandedFolder =
               "@Dependencies@", depBuilder.ToString()
                ]
     processTemplates nugetParams [nuspecFile]
+    let usingsBuilder = new System.Text.StringBuilder();
+    depBuilder.Clear() |> ignore;
+    let methodName = "DontLooseMeDuringBuild"
+    match dependencies with 
+        | [] -> ()
+        | _ ->  dependencies
+                |> List.filter (fun subPod -> subPod.IsUmbrella || not subPod.empty) 
+                |> List.iter (fun (subPod) -> 
+                                let safeSubPodName =  fileSafePodName subPod.name
+                                let subClassName = "___" + (rootNamespace + safeSubPodName).Replace(".","_")
+                                let subPodNamespace = rootNamespace + safeSubPodName
+                                usingsBuilder.AppendFormat(@"using {0};{1}", subPodNamespace, Environment.NewLine) |> ignore
+                                depBuilder.AppendFormat(@"            {0}.{1}();{2}", subClassName, methodName, Environment.NewLine) |> ignore
+                             )
+    let linkerFileParams = 
+            [ "@namespace@", podNamespace
+              "@classname@", "___" + podNamespace.Replace("." , "_") 
+              "@method@", methodName
+              "@usings@", usingsBuilder.ToString()
+              "@dependencies@", depBuilder.ToString()
+               ]
+    processTemplates linkerFileParams [linkerFile]
     ()
 
 let rec downloadPodsRecursive (podName:string) = 
@@ -604,7 +630,11 @@ let generateBuildScript podName depGraph =
     nugetSourceDir |> freshDirectory
     let absDirPath = (DirectoryInfo nugetSourceDir).FullName
     Path.Combine(bindingsFolder, packagesTempDir) |> freshDirectory
-    script.AppendLine("#!/bin/bash") |> sbLine "set -e" |> ignore
+    script.AppendLine("#!/bin/bash") |> sbLine "set -e" 
+                    |> sbLine "rm -rf packages-tmp/*.*" 
+                    |> sbLine "rm -rf packages-good/*.*"
+                    |> sbLine "rm -rf packages-raw/*.*"
+                    |> ignore
     script.AppendFormat("nuget sources Remove -Name {0} || true {1}", packagesSourceName, rn)  |> ignore
     script.AppendFormat("nuget sources Add -Name {0} -Source {1}{2}", packagesSourceName, absDirPath, rn)  |> ignore
     depGraph |> List.iter (fun pod ->

@@ -1,5 +1,6 @@
 ﻿using System;
-using Firebase.iOS;
+using DreamTeam.Xamarin.FirebaseAnalytics;
+using DreamTeam.Xamarin.FirebaseCore;
 using Foundation;
 using UIKit;
 
@@ -20,11 +21,11 @@ namespace FirebaseTestApp
 
         public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
-            Firebase.iOS.FIRApp.Configure();
+            FIRApp.Configure();
             //How to log an event:
             //Firebase.iOS.FIRAnalytics.LogEventWithName("select_content", new NSDictionary<NSString, NSObject>());
-            Firebase.iOS.GIDSignIn.SharedInstance.ClientID = Firebase.iOS.FIRApp.DefaultApp.Options.ClientID;
-            Firebase.iOS.GIDSignIn.SharedInstance.Delegate = new SignInDelegage();
+            //GIDSignIn.SharedInstance.ClientID = FIRApp.DefaultApp.Options.ClientID;
+            //GIDSignIn.SharedInstance.Delegate = new SignInDelegage();
             return true;
         }
 
@@ -59,42 +60,42 @@ namespace FirebaseTestApp
             // Called when the application is about to terminate. Save data, if needed. See also DidEnterBackground.
         }
 
-        public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
-        {
-            var options1 = new UIApplicationOpenUrlOptions(options);
-            return Firebase.iOS.GIDSignIn.SharedInstance.HandleURL(url, options1.SourceApplication, options1.Annotation);
-        }
+        //public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
+        //{
+        //    var options1 = new UIApplicationOpenUrlOptions(options);
+        //    return GIDSignIn.SharedInstance.HandleURL(url, options1.SourceApplication, options1.Annotation);
+        //}
 
-        public override bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
-        {
-            return Firebase.iOS.GIDSignIn.SharedInstance.HandleURL(url, sourceApplication, annotation);
-        }
+        //public override bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
+        //{
+        //    return GIDSignIn.SharedInstance.HandleURL(url, sourceApplication, annotation);
+        //}
 
-        public class SignInDelegage : GIDSignInDelegate
-        {
-            public override void DidSignInForUser(GIDSignIn signIn, GIDGoogleUser user, NSError error)
-            {
-                if (error == null)
-                {
-                    var message = string.Format("Successfully signed with {0}", user.Profile.Email);
-                    UIAlertController controller = UIAlertController.Create("Google SignIn", message, UIAlertControllerStyle.Alert);
-                    UIAlertAction okAction = UIAlertAction.Create("OK", UIAlertActionStyle.Default, (a) => {
-                        controller.DismissViewController(true, null);
-                    });
-                    controller.AddAction(okAction);
-                    UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(controller, true, null);
-                }
-                else
-                {
-                    Console.WriteLine(error.LocalizedDescription);
-                }
-            }
+        //public class SignInDelegage : GIDSignInDelegate
+        //{
+        //    public override void DidSignInForUser(GIDSignIn signIn, GIDGoogleUser user, NSError error)
+        //    {
+        //        if (error == null)
+        //        {
+        //            var message = string.Format("Successfully signed with {0}", user.Profile.Email);
+        //            UIAlertController controller = UIAlertController.Create("Google SignIn", message, UIAlertControllerStyle.Alert);
+        //            UIAlertAction okAction = UIAlertAction.Create("OK", UIAlertActionStyle.Default, (a) => {
+        //                controller.DismissViewController(true, null);
+        //            });
+        //            controller.AddAction(okAction);
+        //            UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(controller, true, null);
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine(error.LocalizedDescription);
+        //        }
+        //    }
 
-            public override void DidDisconnectWithUser(GIDSignIn signIn, GIDGoogleUser user, NSError error)
-            {
+        //    public override void DidDisconnectWithUser(GIDSignIn signIn, GIDGoogleUser user, NSError error)
+        //    {
 
-            }
-        }
+        //    }
+        //}
     }
 }
 

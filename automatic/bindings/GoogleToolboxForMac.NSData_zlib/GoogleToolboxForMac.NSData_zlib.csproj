@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7D8D73B2-A7DD-413A-BCF5-D19D5C677C97}</ProjectGuid>
+    <ProjectGuid>{28A977AC-4FA2-4432-9CA6-285F242BFFF7}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.GoogleToolboxForMac.NSData_zlib</RootNamespace>
@@ -33,6 +33,7 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Linker.cs" />  
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GoogleToolboxForMac.NSData_zlib.linkwith.cs">
       <DependentUpon>GoogleToolboxForMac.NSData_zlib.a</DependentUpon>
