@@ -48,7 +48,7 @@ let (|Prefix|_|) (p:string) (s:string) =
 
 let makeRawGithubUrl s =
     match s with
-    | Prefix "https://github.com/CocoaPods/Specs/blob/" rest -> "https://raw.githubusercontent.com/CocoaPods/Specs/" + rest
+    | Prefix "https://github.com/CocoaPods/Specs/blob/" rest -> "https://raw.githubusercontent.com/CocoaPods/Old-Specs/" + rest
     | _ -> s
 
 let freshDirectory d = 
@@ -69,6 +69,8 @@ let unzipWithTar targetFolder zipFile =
 
 let sbLine (line:String) (sb:System.Text.StringBuilder) =
     sb.AppendLine(line)
+let traceV fmt = 
+    if isVerboseOutput then tracefn else ignore
 
 // type PodDependencyNode = {Name:string; Children:List<PodDependencyNode>}
 
@@ -81,8 +83,14 @@ type Pod = { name : string;
             mutable custom: bool;
             mutable empty: bool; }
             
-            member x.IsUmbrella =
-                    x.empty && not (List.isEmpty x.dependencies)
+            member x.IsUmbrella = //umbrella pod is pod which has no binary but has some dependencies and at least one dependency has binary
+                    let res = x.empty && not (List.isEmpty x.dependencies) && (x.dependencies |> List.exists (fun f -> not f.empty))
+                    // tracefn "Checking isUmbrella on %s (%d) ==== %b (why: empty %b, dependencies %A, non-empty dependencies %A)" 
+                    //         x.name (x.GetHashCode()) res x.empty
+                    //         (x.dependencies |> List.map (fun f -> f.name))
+                    //         (x.dependencies |> List.filter (fun f-> not f.empty) |> List.map (fun f -> f.name))
+                    res 
+                        
             override x.Equals(y) =
                 match y with
                 | :? Pod as p -> (x.name = p.name)
@@ -94,7 +102,7 @@ type Pod = { name : string;
                 member x.CompareTo y =
                     match y with
                     | :? Pod as p -> compare x.name p.name
-                    | _ -> invalidArg "yobj" "cannot compare values of different types"                                    
+                    | _ -> invalidArg "y" "cannot compare values of different types"                                    
 
 
 let podSpecFileName podName =
@@ -152,26 +160,6 @@ let downloadPod podName =
     if result <> 0 then failwith "Error during pod install" 
     let expandFolder = Path.Combine(targetFolder, "Pods", (podNameWithoutSubSpec podName))
     expandFolder    
-
-// let podDependencies (podSpec: Podspec.Root) (podName:string) =
-//     let subSpec = podSubSpec podName
-//     if String.IsNullOrEmpty subSpec then
-//         let dependenciesOptional = podSpec.JsonValue.TryGetProperty "dependencies"
-//         if dependenciesOptional.IsSome then
-//             dependenciesOptional.Value.Properties() 
-//                 |> Seq.map (fun (k,v) -> k)
-//                 |> Seq.toList
-//         else
-//             []
-//     else    
-//         let podSubSpec = podSpec.Subspecs |> Seq.pick (fun s -> if s.Name = subSpec then Some(s) else None )
-//         let dependenciesOptional = podSubSpec.JsonValue.TryGetProperty "dependencies"
-//         if dependenciesOptional.IsSome then
-//                     dependenciesOptional.Value.Properties() 
-//                         |> Seq.map (fun (k,v) -> k)
-//                         |> Seq.toList
-//                 else
-//                     []
 
 let private alwaysArray (json: JsonValue) propertyName = 
     let j = json.TryGetProperty propertyName
@@ -247,13 +235,13 @@ let podFrameworkLocation pod =
             traceFAKE "Did not guess framework location for a pod that is not providing framework %s" podName        
             ""
 
-let podDependencies (pod:Pod) =
+let podDependenciesSimple (pod:Pod) =
     let subSpec = podSubSpec pod.name
     if String.IsNullOrEmpty subSpec then
         let dependenciesOptional = pod.spec.JsonValue.TryGetProperty "dependencies"
         if dependenciesOptional.IsSome then
             dependenciesOptional.Value.Properties() 
-                |> Seq.map (fun (k,v) -> podByName k)
+                |> Seq.map (fun (k,v) -> k)
                 |> Seq.toList
         else
             []
@@ -262,10 +250,12 @@ let podDependencies (pod:Pod) =
         let dependenciesOptional = podSubSpec.JsonValue.TryGetProperty "dependencies"
         if dependenciesOptional.IsSome then
                     dependenciesOptional.Value.Properties() 
-                        |> Seq.map (fun (k,v) -> podByName k)
+                        |> Seq.map (fun (k,v) -> k)
                         |> Seq.toList
                 else
                     []
+let podDependencies (pod:Pod) =
+    podDependenciesSimple pod |> Seq.map (fun k -> podByName k) |> Seq.toList   
 let getDependentHeadersLocations pod =
     let podName = pod.name
     let podSpec = pod.spec
@@ -307,9 +297,8 @@ let fixShapieBugs structsFile apiDefinitionFile =
     //workaround for bug https://bugzilla.xamarin.com/show_bug.cgi?id=46360
     let baseTypes = [" : nint", " : long"
                      " : nuint", " : ulong" 
-                     ]
+                    ]
     processTemplates baseTypes [structsFile]
-
 let generateCSharpBindingsForFramework pod podExpandedFolder =
     let podName = pod.name
     let podSpec = pod.spec
@@ -332,6 +321,7 @@ let generateCSharpBindingsForFramework pod podExpandedFolder =
                                     info.FileName <- "sharpie"
                                     info.Arguments <- sharpieArgs)
         if result <> 0 then failwithf "Error during sharpie %s " sharpieArgs
+        if not <| File.Exists(structsAndEnumsFile) then File.WriteAllText(structsAndEnumsFile, "")
         let additionalUsings = getDependenciesUsings pod
         fixShapieBugs structsAndEnumsFile apiDefinitionFile
         if not <| String.IsNullOrWhiteSpace additionalUsings then
@@ -376,6 +366,7 @@ let generateCSharpBindingsForCustom pod =
     if result <> 0 then failwithf "Error during sharpie %s " sharpieArgs
     let apiDefinitionFile = Path.Combine(bindingFolder, "ApiDefinitions.cs")
     let structsAndEnumsFile = Path.Combine(bindingFolder, "StructsAndEnums.cs")
+    if not <| File.Exists(structsAndEnumsFile) then File.WriteAllText(structsAndEnumsFile, "")
     fixShapieBugs structsAndEnumsFile apiDefinitionFile
 
 let getPackageVersionForPod (podSpec: Podspec.Root) =
@@ -430,11 +421,12 @@ let generateCSProject (pod: Pod) podExpandedFolder =
             let packagesConfig = Path.Combine(bindingFolder, "packages.config")
             CopyFile packagesConfig samplePackagesConfig
             let pb = new System.Text.StringBuilder()
-            dependencies |> List.iter (fun subPod -> 
+            dependencies |> List.filter (fun subPod -> subPod.IsUmbrella || not subPod.empty)
+                         |> List.iter (fun subPod ->
                                         let subPodSpec = subPod.spec
                                         let subPodVersion =  getPackageVersionForPod subPodSpec
                                         let packageName = rootPackageName + fileSafePodName subPod.name
-                                        pb.AppendFormat(@"<package id=""{0}"" version=""{1}"" targetFramework=""{2}"" />{3}", packageName, subPodVersion, packagesTargetFramework ,  Environment.NewLine) |> ignore
+                                        pb.AppendFormat(@"    <package id=""{0}"" version=""{1}"" targetFramework=""{2}"" />{3}", packageName, subPodVersion, packagesTargetFramework ,  Environment.NewLine) |> ignore
                                     )
             processTemplates ["@Packages@", pb.ToString() ] [packagesConfig]                    
         
@@ -442,8 +434,8 @@ let generateCSProject (pod: Pod) podExpandedFolder =
     match dependencies with 
         | [] -> ()
         | _ ->  dependencies
-                |> List.filter (fun subPod -> subPod.IsUmbrella || not subPod.empty) 
-                |> List.iter (fun (subPod) -> 
+                |> List.filter (fun subPod -> subPod.IsUmbrella || not subPod.empty)
+                |> List.iter (fun (subPod) ->
                                 let subPodSpec = subPod.spec
                                 let subPodVersion =  getPackageVersionForPod subPodSpec
                                 let packageName = rootPackageName + fileSafePodName subPod.name
@@ -486,13 +478,19 @@ let generateCSProject (pod: Pod) podExpandedFolder =
     processTemplates linkerFileParams [linkerFile]
     ()
 
-let rec downloadPodsRecursive (podName:string) = 
-    let podSpec = downloadPodSpec podName
-    let tempPod = {name = podName; spec = podSpec; dependencies = []; custom = false; empty = false }
-    let dependencies = podDependencies tempPod
-    match dependencies with 
-        | [] -> ignore()
-        | _ ->  dependencies |> Seq.iter (fun p-> downloadPodsRecursive p.name) |> ignore
+let allPodsCache : Dictionary<string,Pod> = new Dictionary<string, Pod>()
+ 
+let rec downloadPodsRecursive (podName:string) =
+    if not <| allPodsCache.ContainsKey podName then   
+        tracefn "downloading %s" podName
+        let podSpec = downloadPodSpec podName
+        let tempPod = {name = podName; spec = podSpec; dependencies = []; custom = false; empty = false }
+        let dependencies = podDependenciesSimple tempPod
+        tracefn "%A" dependencies
+        match dependencies with 
+            | [] -> ignore()
+            | _ ->  dependencies |> Seq.iter downloadPodsRecursive |> ignore
+        allPodsCache.Add(podName, tempPod)
     
 let compileNonFrameworkProjectForArchitecure podName sim podXCodeDir buildOutDir =
     //see https://gist.github.com/madhikarma/09e553c508f870639570
@@ -578,6 +576,9 @@ let generateBindingForPod (pod:Pod) =
         if producesBinary || pod.IsUmbrella then
             generateCSProject pod podExpandedFolder
 
+    tracefn "Pod %s, empty %b, dependencies are %A" pod.name pod.empty (pod.dependencies |> List.map (fun f->f.name)) 
+    ()
+
 let private listIntersect l1 l2 =
     Set.intersect (Set.ofList l1) (Set.ofList l2) |> Set.toList
 
@@ -603,8 +604,7 @@ let sortDependencyGraph all = //there is a better way
     for i in all do
         resolvedPods <- sortGraphIteration allCopy resolvedPods
     resolvedPods
-
-                    
+                 
 let rec addDependentPods (list:List<Pod>) (pod:Pod) = 
     list.Add pod
     let dependencies = podDependencies pod
@@ -618,8 +618,19 @@ let buildDependencyGraph podName =
     let allPodsUnique = allPods |> Seq.distinct |> List.ofSeq
     printfn "List of pods: %A" (allPodsUnique |> List.map (fun p -> p.name))
     let tree = sortDependencyGraph allPodsUnique
-    printfn "Sorted dependency graph: %A" (tree |> List.map (fun p -> p.name))
-    tree    
+    allPodsCache.Clear()
+    // let's remove duplicate pods and make sure we are always using same instance of pod everywhere
+    let distinctTree = tree |> List.map (fun p -> 
+                                                let cachedPod = if List.isEmpty p.dependencies then  p
+                                                                else
+                                                                    let dep = p.dependencies |> List.map (fun sp -> allPodsCache.[sp.name])
+                                                                    let tempPod = {name = p.name; spec = p.spec; dependencies = dep; custom = false; empty = false }
+                                                                    tempPod
+                                                allPodsCache.Add(p.name, cachedPod) 
+                                                cachedPod
+                                        ) 
+    printfn "Sorted dependency graph: %A" (distinctTree |> List.map (fun p -> p.name))
+    distinctTree    
 
 let generateBuildScript podName depGraph =
     let buildScriptFileName = Path.Combine(bindingsFolder, (fileSafePodName podName) + ".build.sh")
@@ -669,9 +680,6 @@ Target "CleanBindings" ( fun()->
     File.WriteAllText(Path.Combine(bindingsFolder, "empty.txt"), "")
 );
 
-let generateUmbrellaNugetPackages (pods: Pod list) =
-    ()
-
 Target "Bind" ( fun()->
     let podName = getBuildParamOrDefault "POD" ""
     if String.IsNullOrEmpty(podName) then
@@ -684,8 +692,8 @@ Target "Bind" ( fun()->
         let umbrellaPods = mapping |> List.filter ( fun p -> p.IsUmbrella)    
         let u = (umbrellaPods |> List.map (fun p -> p.name))
         printfn "Umbrella packages will be generated for these pods %A" u
-        generateUmbrellaNugetPackages umbrellaPods
         generateBuildScript podName valuablePods |> ignore
+        ()
 );
 
 // start build

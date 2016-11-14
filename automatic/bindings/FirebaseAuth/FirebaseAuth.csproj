@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{001F4BD5-0137-423D-BCB0-AEF7E511387E}</ProjectGuid>
+    <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>DreamTeam.Xamarin.FirebaseAuth</RootNamespace>
+    <AssemblyName>FirebaseAuth</AssemblyName>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Xamarin.iOS" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Linker.cs" />  
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FirebaseAuth.linkwith.cs">
+      <DependentUpon>FirebaseAuth.a</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingApiDefinition Include="ApiDefinitions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingCoreSource Include="StructsAndEnums.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingNativeLibrary Include="FirebaseAuth.a" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FirebaseAnalytics">
+      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseAnalytics.0.0.2\lib\Xamarin.iOS\FirebaseAnalytics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FirebaseCore">
+      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseCore.0.0.2\lib\Xamarin.iOS\FirebaseCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GTMSessionFetcher.Core">
+      <HintPath>..\packages-tmp\DT.Xamarin.GTMSessionFetcher.Core.0.0.2\lib\Xamarin.iOS\GTMSessionFetcher.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GoogleToolboxForMac.NSDictionary_URLArguments">
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleToolboxForMac.NSDictionary_URLArguments.0.0.2\lib\Xamarin.iOS\GoogleToolboxForMac.NSDictionary_URLArguments.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
+</Project>

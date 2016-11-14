@@ -11,6 +11,8 @@ To some extent this tool is similar to Xamarin's *Objective Sharpie*. Biggest di
 ### How to use
 Prerequisites: run `mozroots --import --sync` to import SSL root certificates.
 
+NuGet 3.x required. To update NuGet, run `sudo nuget update -Self` 
+
 **First stage - generate bindings**
 
 To generate bindings `sh bind.sh POD=FirebaseDatabase` or `sh bind.sh POD=Firebase/Messaging` or use other pod names (see here https://firebase.google.com/docs/ios/setup in _Available Pods_ section)

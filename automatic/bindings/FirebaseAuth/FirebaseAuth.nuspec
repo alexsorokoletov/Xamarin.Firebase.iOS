@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
+  <id>DT.Xamarin.FirebaseAuth</id>
+  <version>0.0.2</version>
+  <authors>DreamTeam Mobile</authors>
+  <owners>DreamTeam Mobile</owners>
+  <summary>The official iOS client for Firebase Authentication</summary>
+  <licenseUrl>https://www.firebase.com/docs/ios/guide/user-auth.html</licenseUrl>
+  <projectUrl>https://www.firebase.com/docs/ios/guide/user-auth.html</projectUrl>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  <description>Umbrella Xamarin binding === Firebase Authentication allows you to manage your own account system without any backend code. It supports email and password accounts, as well as several 3rd party authentication mechanisms.</description>
+  <releaseNotes></releaseNotes>
+  <copyright>Not yet available</copyright>    
+  <tags>Xamarin iOS</tags>
+  <dependencies>
+    <dependency id="DT.Xamarin.FirebaseAnalytics" version="0.0.2" />
+    <dependency id="DT.Xamarin.FirebaseCore" version="0.0.2" />
+    <dependency id="DT.Xamarin.GTMSessionFetcher.Core" version="0.0.2" />
+    <dependency id="DT.Xamarin.GoogleToolboxForMac.NSDictionary_URLArguments" version="0.0.2" />
+
+  </dependencies>
+  <references></references>
+  </metadata>
+  <files>
+    <file src="bin/Release/FirebaseAuth.dll" target="lib/Xamarin.iOS" />
+  </files>
+</package>
