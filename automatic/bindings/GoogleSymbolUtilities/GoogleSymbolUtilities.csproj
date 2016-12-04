@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E23B18BB-6505-4C5C-BBD3-353756CB0B00}</ProjectGuid>
+    <ProjectGuid>{59E3482E-2745-452D-AAD7-B9402270018E}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.GoogleSymbolUtilities</RootNamespace>
@@ -47,6 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingNativeLibrary Include="GoogleSymbolUtilities.a" />
+  </ItemGroup>
+  <ItemGroup>
+
   </ItemGroup>
   <ItemGroup>
 

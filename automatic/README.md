@@ -32,8 +32,8 @@ Between 1st and 2nd stages you are expected to check generated bindings and make
 1. To build all bindings use `sh _____.build.sh` script in `bindings` folder. 
 1. To compile single binding use `msbuild -p:Configuration=Release` to compile in Release in the specific binding folder (e.g. bindings/AWSCore)
 
-#### Things to fix and improve
-1. support bundle resources (for example GoogleSignIn)
+#### Things to fix and improve 
+1. support bundle resources (for example GoogleSignIn) by using cocoapod resources tag (resources/ios-resources)
 1. detailed nuspec packages info and support for sub-version updates
 1. support weak_frameworks linker flag
 1. way to generate multiple pods at once
@@ -45,3 +45,11 @@ Please ping me if you want to collaborate, extend, fix or change the project. I 
 
 #### Extra
 Please see beginning of the build.fsx file for configuration options (verbose logs, versions, etc)
+
+#### Pods to try
+AWSCognito
+Mapbox iOS SDK
+Zendesk SDK
+Facebook Pop
+Firebase *
+GoogleFontsiOS

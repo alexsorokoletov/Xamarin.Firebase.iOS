@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6ADAF86B-9E61-4E4E-AB7D-9C9EDFB99A0C}</ProjectGuid>
+    <ProjectGuid>{AE3390EC-88CF-4643-8E1D-CBC5E58A6E10}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.GoogleToolboxForMac.NSString_URLArguments</RootNamespace>
@@ -47,6 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingNativeLibrary Include="GoogleToolboxForMac.NSString_URLArguments.a" />
+  </ItemGroup>
+  <ItemGroup>
+
   </ItemGroup>
   <ItemGroup>
 

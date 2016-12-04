@@ -51,5 +51,8 @@
   <ItemGroup>
 @References@
   </ItemGroup>
+  <ItemGroup>
+@BundleResources@
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

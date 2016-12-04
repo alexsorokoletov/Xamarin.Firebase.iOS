@@ -23,7 +23,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -33,7 +34,7 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Linker.cs" />  
+    <Compile Include="Linker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GoogleToolboxForMac.NSData_zlib.linkwith.cs">
       <DependentUpon>GoogleToolboxForMac.NSData_zlib.a</DependentUpon>
@@ -47,9 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingNativeLibrary Include="GoogleToolboxForMac.NSData_zlib.a" />
-  </ItemGroup>
-  <ItemGroup>
-
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

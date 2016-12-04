@@ -48,7 +48,7 @@ let (|Prefix|_|) (p:string) (s:string) =
 
 let makeRawGithubUrl s =
     match s with
-    | Prefix "https://github.com/CocoaPods/Specs/blob/" rest -> "https://raw.githubusercontent.com/CocoaPods/Old-Specs/" + rest
+    | Prefix "https://github.com/CocoaPods/Specs/blob/" rest -> "https://raw.githubusercontent.com/CocoaPods/Specs/" + rest
     | _ -> s
 
 let freshDirectory d = 
@@ -359,7 +359,7 @@ let generateCSharpBindingsForCustom pod =
     let podNamespace = rootNamespace + safePodName
     let sharpieArgs =  "-tlm-do-not-submit bind -output " + bindingFolder + " -sdk "+ iosSdkInSharpie + " -scope " + headersFolder 
                              + " " + mainHeader 
-                             + " -n " + podNamespace + " -c -I" + headersFolder +  depHeadersOption + " -v"
+                             + " -n " + podNamespace + " -c " +  depHeadersOption + " -v"
     let result = execProcess (fun info ->  
                                 info.FileName <- "sharpie"
                                 info.Arguments <- sharpieArgs)
@@ -389,6 +389,33 @@ let buildCSProjReferences podDependencies =
                                  )
     references.ToString()
 
+let checkPodForResources pod podPath bindingFolder =
+    //TODO check resource from podspec first and return existing directories
+    let resourcesDir = Path.Combine(podPath, "Resources") 
+    if Directory.Exists resourcesDir then
+        //until xs supports wildcards https://bugzilla.xamarin.com/show_bug.cgi?id=48954
+        let targetFolder = Path.Combine(bindingFolder, "Resources")
+        CleanDir targetFolder
+        CreateDir targetFolder
+        CopyDir targetFolder resourcesDir (fun _ -> true)
+        let relativeDir = (DirectoryInfo resourcesDir).Parent.FullName
+        let allFiles = !! (resourcesDir + "/**/*.*") |> Seq.map (fun f-> 
+                                                                         if f.StartsWith(relativeDir) then
+                                                                            f.Substring(relativeDir.Length+1)
+                                                                         else 
+                                                                            f
+                                                                         )
+                                                     |> Seq.map (fun f -> f.Replace("/","\\"))
+                                                     |> Seq.map (fun f->
+                                                                        String.Format("    <BundleResource Include=\"{0}\" />", f)
+                                                                )
+        printfn "Found BundleResources: %A" allFiles
+        String.Join(Environment.NewLine, allFiles)    
+        // "         <BundleResource Include=\"Resources\**\*\" />"
+    else
+        ""
+
+
 let generateCSProject (pod: Pod) podExpandedFolder =
     let podName = pod.name
     let podSpec = pod.spec
@@ -396,13 +423,6 @@ let generateCSProject (pod: Pod) podExpandedFolder =
     let podNamespace = rootNamespace + safePodName
     let dependencies = pod.dependencies
     let references = buildCSProjReferences dependencies
-    let replacements = 
-            [ "@ProjectGuid@", Guid.NewGuid().ToString("B").ToUpper()
-              "@RootNamespace@", podNamespace
-              "@AssemblyName@", safePodName
-              "@PodName@", safePodName
-              "@References@", references
-              "@Description@", "Xamarin binding ===" + podSpec.Description.Replace("\r"," ").Replace("\n"," ") ]
     let bindingFolder = podBindingsFolder podName
     let dllName = safePodName
     let nuspecFile = Path.Combine(bindingFolder, safePodName + ".nuspec")
@@ -410,6 +430,15 @@ let generateCSProject (pod: Pod) podExpandedFolder =
     let linkerFile = Path.Combine(bindingFolder, "Linker.cs")
     CopyFile linkerFile sampleLinkerFile
     if not <| pod.IsUmbrella then
+        let bundleResources = checkPodForResources pod podExpandedFolder bindingFolder
+        let replacements = 
+                [   "@ProjectGuid@", Guid.NewGuid().ToString("B").ToUpper()
+                    "@RootNamespace@", podNamespace
+                    "@AssemblyName@", safePodName
+                    "@PodName@", safePodName
+                    "@References@", references
+                    "@BundleResources@", bundleResources
+                    "@Description@", "Xamarin binding ===" + podSpec.Description.Replace("\r"," ").Replace("\n"," ") ]
         let csProjectFile = Path.Combine(bindingFolder, dllName + ".csproj")
         let assemblyInfoFolder = Path.Combine(bindingFolder, "Properties")
         let assemblyInfoFile = Path.Combine(assemblyInfoFolder,  "AssemblyInfo.cs")
@@ -482,11 +511,9 @@ let allPodsCache : Dictionary<string,Pod> = new Dictionary<string, Pod>()
  
 let rec downloadPodsRecursive (podName:string) =
     if not <| allPodsCache.ContainsKey podName then   
-        tracefn "downloading %s" podName
         let podSpec = downloadPodSpec podName
         let tempPod = {name = podName; spec = podSpec; dependencies = []; custom = false; empty = false }
         let dependencies = podDependenciesSimple tempPod
-        tracefn "%A" dependencies
         match dependencies with 
             | [] -> ignore()
             | _ ->  dependencies |> Seq.iter downloadPodsRecursive |> ignore
@@ -551,7 +578,7 @@ let compileNonFrameworkProject pod =
         File.WriteAllText(linkWithFile, linkerSuggestions)
         true
     else
-        traceFAKE "VERIFY: POD %s most probably doesn't have any binaries generated" podName
+        traceFAKE "VERIFY: pod %s most probably doesn't have any binaries generated" podName
         false
 
 let generateBindingForPod (pod:Pod) = 
@@ -559,14 +586,14 @@ let generateBindingForPod (pod:Pod) =
     let vendoredFrameworkOptional = pod.spec.JsonValue.TryGetProperty "vendored_frameworks"
     let isFramework = vendoredFrameworkOptional.IsSome
     pod.custom <- not <| isFramework 
-    tracefn "GENERATING BINDING FOR %s" pod.name
     if isFramework then
+        tracefn "Generating C# bindings for Framework pod %s" pod.name
         copyBinaryAndGenerateLinkWith pod podExpandedFolder
         generateCSharpBindingsForFramework pod podExpandedFolder
         pod.empty <- false
         generateCSProject pod podExpandedFolder
     else
-        tracefn "GENERATING BINDINGS FOR non-Framework pod %s" pod.name
+        tracefn "Generating C# bindings for non-Framework pod %s" pod.name
         let producesBinary = compileNonFrameworkProject pod
         pod.empty <- not producesBinary
         if pod.IsUmbrella then
@@ -576,7 +603,7 @@ let generateBindingForPod (pod:Pod) =
         if producesBinary || pod.IsUmbrella then
             generateCSProject pod podExpandedFolder
 
-    tracefn "Pod %s, empty %b, dependencies are %A" pod.name pod.empty (pod.dependencies |> List.map (fun f->f.name)) 
+    // tracefn "Pod %s, empty %b, dependencies are %A" pod.name pod.empty (pod.dependencies |> List.map (fun f->f.name)) 
     ()
 
 let private listIntersect l1 l2 =
@@ -611,10 +638,13 @@ let rec addDependentPods (list:List<Pod>) (pod:Pod) =
     dependencies |> Seq.iter (fun d -> addDependentPods list d)
     pod.dependencies <- dependencies 
     
-let buildDependencyGraph podName =
+let buildDependencyGraph podName skipDependencies=
     let pod = podByName podName
     let allPods = new List<Pod>()
-    addDependentPods allPods pod
+    if skipDependencies then
+        allPods.Add pod
+    else
+        addDependentPods allPods pod
     let allPodsUnique = allPods |> Seq.distinct |> List.ofSeq
     printfn "List of pods: %A" (allPodsUnique |> List.map (fun p -> p.name))
     let tree = sortDependencyGraph allPodsUnique
@@ -682,11 +712,12 @@ Target "CleanBindings" ( fun()->
 
 Target "Bind" ( fun()->
     let podName = getBuildParamOrDefault "POD" ""
+    let isSingle = (getBuildParamOrDefault "SINGLE" "") = "YES"
     if String.IsNullOrEmpty(podName) then
         traceFAKE "You must specify pod name as a POD variable: sh bind.sh POD=FirebaseAnalytics"
     else
         downloadPodsRecursive podName
-        let mapping = buildDependencyGraph podName
+        let mapping = buildDependencyGraph podName isSingle
         mapping |> List.iter generateBindingForPod
         let valuablePods = mapping |> List.filter (fun p-> p.IsUmbrella || (not p.empty))
         let umbrellaPods = mapping |> List.filter ( fun p -> p.IsUmbrella)    
@@ -694,6 +725,10 @@ Target "Bind" ( fun()->
         printfn "Umbrella packages will be generated for these pods %A" u
         generateBuildScript podName valuablePods |> ignore
         ()
+);
+
+Target "Test" ( fun()->
+    ()
 );
 
 // start build

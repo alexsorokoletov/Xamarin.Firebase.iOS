@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
+  <id>DT.Xamarin.GoogleSignIn</id>
+  <version>0.0.2</version>
+  <authors>DreamTeam Mobile</authors>
+  <owners>DreamTeam Mobile</owners>
+  <summary>Enables iOS apps to sign in with Google.</summary>
+  <licenseUrl>https://developers.google.com/identity/sign-in/ios/</licenseUrl>
+  <projectUrl>https://developers.google.com/identity/sign-in/ios/</projectUrl>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  <description>Umbrella Xamarin binding === The Google Sign-In SDK allows users to sign in with their Google account from third-party apps.</description>
+  <releaseNotes></releaseNotes>
+  <copyright>Not yet available</copyright>    
+  <tags>Xamarin iOS</tags>
+  <dependencies>
+    <dependency id="DT.Xamarin.GoogleAppUtilities" version="0.0.2" />
+    <dependency id="DT.Xamarin.GTMOAuth2" version="0.0.2" />
+    <dependency id="DT.Xamarin.GTMSessionFetcher.Core" version="0.0.2" />
+    <dependency id="DT.Xamarin.GoogleToolboxForMac.NSDictionary_URLArguments" version="0.0.2" />
+
+  </dependencies>
+  <references></references>
+  </metadata>
+  <files>
+    <file src="bin/Release/GoogleSignIn.dll" target="lib/Xamarin.iOS" />
+  </files>
+</package>

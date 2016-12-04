@@ -7,7 +7,7 @@ using UIKit;
 namespace DreamTeam.Xamarin.GTMSessionFetcher.Core
 {
 	[Static]
-	// [Verify (ConstantsInterfaceAssociation)]
+	//[Verify (ConstantsInterfaceAssociation)]
 	partial interface Constants
 	{
 		// extern NSString *const _Nonnull kGTMSessionFetcherStartedNotification;
@@ -66,7 +66,7 @@ namespace DreamTeam.Xamarin.GTMSessionFetcher.Core
 		// +(NSUserDefaults * _Nonnull)fetcherUserDefaults;
 		[Static]
 		[Export ("fetcherUserDefaults")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		NSUserDefaults FetcherUserDefaults { get; }
 	}
 
@@ -181,25 +181,25 @@ namespace DreamTeam.Xamarin.GTMSessionFetcher.Core
 		// @required -(NSURLSession * _Nullable)session;
 		[Abstract]
 		[NullAllowed, Export ("session")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		NSUrlSession Session { get; }
 
 		// @required -(NSURLSession * _Nullable)sessionForFetcherCreation;
 		[Abstract]
 		[NullAllowed, Export ("sessionForFetcherCreation")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		NSUrlSession SessionForFetcherCreation { get; }
 
 		// @required -(id<NSURLSessionDelegate> _Nullable)sessionDelegate;
 		[Abstract]
 		[NullAllowed, Export ("sessionDelegate")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		NSUrlSessionDelegate SessionDelegate { get; }
 
 		// @required -(NSDate * _Nullable)stoppedAllFetchersDate;
 		[Abstract]
 		[NullAllowed, Export ("stoppedAllFetchersDate")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		NSDate StoppedAllFetchersDate { get; }
 
 		// @required @property (readonly, strong) NSOperationQueue * _Nullable delegateQueue;
@@ -261,7 +261,7 @@ namespace DreamTeam.Xamarin.GTMSessionFetcher.Core
 
 		// @optional -(BOOL)primeForRefresh;
 		[Export ("primeForRefresh")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		bool PrimeForRefresh { get; }
 	}
 
@@ -314,7 +314,7 @@ namespace DreamTeam.Xamarin.GTMSessionFetcher.Core
 		// +(NSArray<GTMSessionFetcher *> * _Nonnull)fetchersForBackgroundSessions;
 		[Static]
 		[Export ("fetchersForBackgroundSessions")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		GTMSessionFetcher[] FetchersForBackgroundSessions { get; }
 
 		// -(instancetype _Nonnull)initWithRequest:(NSURLRequest * _Nullable)request configuration:(NSURLSessionConfiguration * _Nullable)configuration;
@@ -375,7 +375,7 @@ namespace DreamTeam.Xamarin.GTMSessionFetcher.Core
 
 		// -(NSDictionary<NSString *,NSString *> * _Nullable)sessionIdentifierMetadata;
 		[NullAllowed, Export ("sessionIdentifierMetadata")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		NSDictionary<NSString, NSString> SessionIdentifierMetadata { get; }
 
 		// +(void)application:(UIApplication * _Nonnull)application handleEventsForBackgroundURLSession:(NSString * _Nonnull)identifier completionHandler:(GTMSessionFetcherSystemCompletionHandler _Nonnull)completionHandler;
@@ -630,19 +630,19 @@ namespace DreamTeam.Xamarin.GTMSessionFetcher.Core
 		// +(void)setSubstituteUIApplication:(id<GTMUIApplicationProtocol> _Nullable)substituteUIApplication;
 		[Static]
 		[NullAllowed, Export ("substituteUIApplication")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		GTMUIApplicationProtocol SubstituteUIApplication { get; set; }
 
 		// +(GTMSessionCookieStorage * _Nonnull)staticCookieStorage;
 		[Static]
 		[Export ("staticCookieStorage")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		GTMSessionCookieStorage StaticCookieStorage { get; }
 
 		// +(BOOL)appAllowsInsecureRequests;
 		[Static]
 		[Export ("appAllowsInsecureRequests")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		bool AppAllowsInsecureRequests { get; }
 
 		// +(void)setLoggingEnabled:(BOOL)flag;
@@ -653,7 +653,7 @@ namespace DreamTeam.Xamarin.GTMSessionFetcher.Core
 		// +(BOOL)isLoggingEnabled;
 		[Static]
 		[Export ("isLoggingEnabled")]
-		// [Verify (MethodToProperty)]
+		//[Verify (MethodToProperty)]
 		bool IsLoggingEnabled { get; }
 	}
 

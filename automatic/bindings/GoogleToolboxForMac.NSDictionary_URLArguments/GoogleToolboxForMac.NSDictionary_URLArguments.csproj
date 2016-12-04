@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{633E62AB-3C3B-4901-8E72-9A6C8716FC74}</ProjectGuid>
+    <ProjectGuid>{FFC27A92-A80A-4610-8523-559D2DAB9C2F}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.GoogleToolboxForMac.NSDictionary_URLArguments</RootNamespace>
@@ -53,6 +53,9 @@
       <HintPath>..\packages-tmp\DT.Xamarin.GoogleToolboxForMac.NSString_URLArguments.0.0.2\lib\Xamarin.iOS\GoogleToolboxForMac.NSString_URLArguments.dll</HintPath>
       <Private>True</Private>
     </Reference>
+
+  </ItemGroup>
+  <ItemGroup>
 
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
