@@ -94,25 +94,25 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
     <Reference Include="FirebaseInstanceID">
-      <HintPath>..\packages\DT.Xamarin.FirebaseInstanceID.0.0.2\lib\Xamarin.iOS\FirebaseInstanceID.dll</HintPath>
+      <HintPath>..\packages\DT.Xamarin.FirebaseInstanceID.1.0.8-alpha1\lib\Xamarin.iOS\FirebaseInstanceID.dll</HintPath>
     </Reference>
     <Reference Include="GoogleSymbolUtilities">
-      <HintPath>..\packages\DT.Xamarin.GoogleSymbolUtilities.0.0.2\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
+      <HintPath>..\packages\DT.Xamarin.GoogleSymbolUtilities.1.1.2-alpha1\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
     </Reference>
     <Reference Include="GoogleInterchangeUtilities">
-      <HintPath>..\packages\DT.Xamarin.GoogleInterchangeUtilities.0.0.2\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
+      <HintPath>..\packages\DT.Xamarin.GoogleInterchangeUtilities.1.2.2-alpha1\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
     </Reference>
     <Reference Include="GoogleToolboxForMac.NSData_zlib">
-      <HintPath>..\packages\DT.Xamarin.GoogleToolboxForMac.NSData_zlib.0.0.2\lib\Xamarin.iOS\GoogleToolboxForMac.NSData_zlib.dll</HintPath>
+      <HintPath>..\packages\DT.Xamarin.GoogleToolboxForMac.NSData_zlib.2.1.0-alpha1\lib\Xamarin.iOS\GoogleToolboxForMac.NSData_zlib.dll</HintPath>
     </Reference>
     <Reference Include="FirebaseCore">
-      <HintPath>..\packages\DT.Xamarin.FirebaseCore.0.0.2\lib\Xamarin.iOS\FirebaseCore.dll</HintPath>
+      <HintPath>..\packages\DT.Xamarin.FirebaseCore.3.4.5-alpha1\lib\Xamarin.iOS\FirebaseCore.dll</HintPath>
     </Reference>
     <Reference Include="FirebaseAnalytics">
-      <HintPath>..\packages\DT.Xamarin.FirebaseAnalytics.0.0.2\lib\Xamarin.iOS\FirebaseAnalytics.dll</HintPath>
+      <HintPath>..\packages\DT.Xamarin.FirebaseAnalytics.3.6.0-alpha1\lib\Xamarin.iOS\FirebaseAnalytics.dll</HintPath>
     </Reference>
     <Reference Include="FirebaseDatabase">
-      <HintPath>..\packages\DT.Xamarin.FirebaseDatabase.0.0.2\lib\Xamarin.iOS\FirebaseDatabase.dll</HintPath>
+      <HintPath>..\packages\DT.Xamarin.FirebaseDatabase.3.1.1-alpha1\lib\Xamarin.iOS\FirebaseDatabase.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
