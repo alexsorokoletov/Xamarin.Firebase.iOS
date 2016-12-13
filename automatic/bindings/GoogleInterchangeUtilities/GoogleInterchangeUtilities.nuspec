@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
   <id>DT.Xamarin.GoogleInterchangeUtilities</id>
-  <version>1.2.2.0-alpha1</version>
+  <version>1.2.2-alpha1</version>
   <authors>DreamTeam Mobile</authors>
   <owners>DreamTeam Mobile</owners>
   <summary>Shared interchange utility methods for Google libraries. Not intended for direct use.</summary>
@@ -14,7 +14,7 @@
   <copyright>Not yet available</copyright>    
   <tags>Xamarin iOS</tags>
   <dependencies>
-    <dependency id="DT.Xamarin.GoogleSymbolUtilities" version="1.1.2.0-alpha1" />
+    <dependency id="DT.Xamarin.GoogleSymbolUtilities" version="1.1.2-alpha1" />
 
   </dependencies>
   <references></references>

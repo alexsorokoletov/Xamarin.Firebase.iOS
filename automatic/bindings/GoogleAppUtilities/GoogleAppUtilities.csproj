@@ -23,7 +23,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -33,7 +34,7 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Linker.cs" />  
+    <Compile Include="Linker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GoogleAppUtilities.linkwith.cs">
       <DependentUpon>GoogleAppUtilities.a</DependentUpon>
@@ -53,10 +54,6 @@
       <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.0.0.2\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-
-  </ItemGroup>
-  <ItemGroup>
-
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

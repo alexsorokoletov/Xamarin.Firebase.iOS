@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{19962D44-EBB4-4E21-BF20-3EDD968CCAC2}</ProjectGuid>
+    <ProjectGuid>{62FC2F58-EB77-4962-9AEB-60DCBD8B1F1D}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.FirebaseAnalytics</RootNamespace>
@@ -44,23 +44,23 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FirebaseCore">
-      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseCore.3.4.5.0-alpha1\lib\Xamarin.iOS\FirebaseCore.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseCore.3.4.5-alpha1\lib\Xamarin.iOS\FirebaseCore.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FirebaseInstanceID">
-      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseInstanceID.1.0.8.0-alpha1\lib\Xamarin.iOS\FirebaseInstanceID.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseInstanceID.1.0.8-alpha1\lib\Xamarin.iOS\FirebaseInstanceID.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GoogleInterchangeUtilities">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleInterchangeUtilities.1.2.2.0-alpha1\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleInterchangeUtilities.1.2.2-alpha1\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GoogleSymbolUtilities">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.1.1.2.0-alpha1\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.1.1.2-alpha1\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GoogleToolboxForMac.NSData_zlib">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleToolboxForMac.NSData_zlib.2.1.0.0-alpha1\lib\Xamarin.iOS\GoogleToolboxForMac.NSData_zlib.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleToolboxForMac.NSData_zlib.2.1.0-alpha1\lib\Xamarin.iOS\GoogleToolboxForMac.NSData_zlib.dll</HintPath>
       <Private>True</Private>
     </Reference>
 

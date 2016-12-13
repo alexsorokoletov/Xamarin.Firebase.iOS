@@ -1,5 +1,5 @@
 ﻿using DreamTeam.Xamarin.FirebaseAnalytics;
-
+using DreamTeam.Xamarin.FirebaseCore;
 
 namespace DreamTeam.Xamarin.FirebaseDatabase
 {
@@ -13,7 +13,7 @@ namespace DreamTeam.Xamarin.FirebaseDatabase
         public static void DontLooseMeDuringBuild()
         {
             ___DreamTeam_Xamarin_FirebaseAnalytics.DontLooseMeDuringBuild();
-
+            ___DreamTeam_Xamarin_FirebaseCore.DontLooseMeDuringBuild();
         }
     }
 }

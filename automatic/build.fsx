@@ -384,7 +384,7 @@ let generateCSharpBindingsForCustom pod =
     fixShapieBugs structsAndEnumsFile apiDefinitionFile
 
 let getPackageVersionForPod (podSpec: Podspec.Root) =
-    let realVersion = (podSpec.JsonValue.GetProperty "version").AsString() + ".0"
+    let realVersion = (podSpec.JsonValue.GetProperty "version").AsString()
     let overrideVersion = getBuildParamOrDefault "VERSION" defaultPodVersion
     let suffix = getBuildParamOrDefault "VERSION-TYPE" "" 
     if not <| String.IsNullOrEmpty(overrideVersion) then overrideVersion + suffix else realVersion + suffix
