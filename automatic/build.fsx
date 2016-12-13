@@ -31,7 +31,7 @@ let sampleLinkerFile = "linker.template.cs"
 
 let rootNamespace = "DreamTeam.Xamarin."
 let rootPackageName = "DT.Xamarin."
-let defaultPodVersion = "0.0.1"
+let defaultPodVersion = ""
 let rn = Environment.NewLine
 let mutable isVerboseOutput = false
 let firstRegexMatch input (regex:string) = 
@@ -171,13 +171,26 @@ let private alwaysArray (json: JsonValue) propertyName =
     else
         [||]
 
+
+let isFrameworkSpec (podSpec: Podspec.Root) =
+    let vendoredFrameworkOptional = podSpec.JsonValue.TryGetProperty "vendored_frameworks"
+    vendoredFrameworkOptional.IsSome 
+
+
 let generateLinkWith pod =
    let podName = pod.name
    let podSpec = pod.spec
    let safePodName = fileSafePodName podName 
+   let isFramework = isFrameworkSpec podSpec
+   let linkTarget = if isFramework then
+                        let frameworks = alwaysArray podSpec.JsonValue "vendored_frameworks"
+                        Path.GetFileName(frameworks.[0])
+                    else
+                        safePodName + ".a"
+   
    let linkWithContent = new System.Text.StringBuilder()
    linkWithContent.AppendLine("using ObjCRuntime;") |> ignore
-   linkWithContent.AppendFormat(@"[assembly: LinkWith (""{0}.a"", {1}", safePodName, Environment.NewLine) |> ignore
+   linkWithContent.AppendFormat(@"[assembly: LinkWith (""{0}"", {1}", linkTarget, Environment.NewLine) |> ignore
    if (podSpec.Frameworks.Length > 0) then
         linkWithContent.AppendFormat(@"Frameworks = ""{0}"",{1}", String.Join(" ", podSpec.Frameworks), Environment.NewLine) |> ignore
    let libraries = alwaysArray podSpec.JsonValue "libraries"
@@ -193,11 +206,6 @@ let generateLinkWith pod =
    linkWithContent.ToString();
 
 
-let isFrameworkSpec (podSpec: Podspec.Root) =
-    let vendoredFrameworkOptional = podSpec.JsonValue.TryGetProperty "vendored_frameworks"
-    vendoredFrameworkOptional.IsSome 
-
-
 let podHeadersLocation (podName:string) = 
     let truePodName = podNameWithoutSubSpec podName
     let podSubSpec = podSubSpec podName
@@ -205,7 +213,9 @@ let podHeadersLocation (podName:string) =
     let podFolder = fileSafePodName podName
     let isFramework = isFrameworkSpec podSpec
     if isFramework then
-        Path.Combine(podsFolder, podFolder, "XCode", "Pods", truePodName, podSpec.VendoredFrameworks.[0], "Headers")
+        let frameworks = alwaysArray podSpec.JsonValue "vendored_frameworks"
+        let fwName = frameworks.[0]
+        Path.Combine(podsFolder, podFolder, "XCode", "Pods", truePodName, fwName, "Headers")
     else 
         let guessFrameworkPath = Path.Combine(podsFolder, podFolder, "XCode", "Pods", truePodName, truePodName) 
         let bestGuess = Path.Combine(guessFrameworkPath, truePodName + ".h")
@@ -223,7 +233,8 @@ let podFrameworkLocation pod =
     let podFolder = fileSafePodName podName
     let isFramework = isFrameworkSpec podSpec
     if isFramework then
-        let fwName = podSpec.VendoredFrameworks.[0]
+        let frameworks = alwaysArray podSpec.JsonValue "vendored_frameworks"
+        let fwName = frameworks.[0]
         let fwContainerDir = firstRegexMatch fwName @"(.+)/.+?\.framework"
         " -F " + Path.Combine(podsFolder, podFolder, "XCode", "Pods", truePodName, fwContainerDir)
     else 
@@ -281,17 +292,19 @@ let getDependenciesUsings pod =
 
 let copyBinaryAndGenerateLinkWith pod podExpandedFolder =
     let podName = pod.name
+    let safePodName = fileSafePodName podName 
     let podSpec = pod.spec
-    let fwName = podSpec.VendoredFrameworks.[0]
-    let fwBinaryName = firstRegexMatch fwName @".+/(.+?)\.framework"
-    let binaryName = Path.Combine(podExpandedFolder, fwName, fwBinaryName)
+    let frameworks = alwaysArray podSpec.JsonValue "vendored_frameworks"
+    let fwName = frameworks.[0]
+    let fwFolderPath = Path.Combine(podExpandedFolder, fwName)
     let bindingFolder = podBindingsFolder podName
+    let targetFolder = Path.Combine(bindingFolder, fwName);
     freshDirectory bindingFolder
-    let dotAName = Path.Combine(bindingFolder, podName + ".a");
-    CopyFile dotAName binaryName 
-    let linkWithFile = Path.Combine(bindingFolder, podName + ".linkwith.cs");
+    freshDirectory targetFolder
+    let linkWithFile = Path.Combine(bindingFolder, safePodName + ".linkwith.cs");
     let linkerSuggestions = generateLinkWith pod
     File.WriteAllText(linkWithFile, linkerSuggestions)
+    CopyDir targetFolder fwFolderPath (fun _ -> true)    
 
 let fixShapieBugs structsFile apiDefinitionFile =
     //workaround for bug https://bugzilla.xamarin.com/show_bug.cgi?id=46360
@@ -303,7 +316,8 @@ let generateCSharpBindingsForFramework pod podExpandedFolder =
     let podName = pod.name
     let podSpec = pod.spec
     let bindingFolder = podBindingsFolder podName
-    let fwName = podSpec.VendoredFrameworks.[0]    
+    let frameworks = alwaysArray podSpec.JsonValue "vendored_frameworks"
+    let fwName = frameworks.[0]  
     let fwBinaryName = firstRegexMatch fwName @".+/(.+?)\.framework"
     let iosSdkInSharpie = @"""iphoneos""" 
     let headersFolder = Path.Combine(podExpandedFolder, fwName, "Headers")
@@ -372,7 +386,8 @@ let generateCSharpBindingsForCustom pod =
 let getPackageVersionForPod (podSpec: Podspec.Root) =
     let realVersion = (podSpec.JsonValue.GetProperty "version").AsString() + ".0"
     let overrideVersion = getBuildParamOrDefault "VERSION" defaultPodVersion
-    if not <| String.IsNullOrEmpty(overrideVersion) then overrideVersion else realVersion
+    let suffix = getBuildParamOrDefault "VERSION-TYPE" "" 
+    if not <| String.IsNullOrEmpty(overrideVersion) then overrideVersion + suffix else realVersion + suffix
 
 let buildCSProjReferences podDependencies =
     let references = new System.Text.StringBuilder();
@@ -415,8 +430,41 @@ let checkPodForResources pod podPath bindingFolder =
     else
         ""
 
+let frameworkName pod =
+    let vendoredFrameworkOptional = pod.spec.JsonValue.TryGetProperty "vendored_frameworks"
+    let isFramework = vendoredFrameworkOptional.IsSome
+    if isFramework then
+        let frameworks = alwaysArray pod.spec.JsonValue "vendored_frameworks"
+        let fwName = frameworks.[0]
+        fwName
+    else
+        ""
 
-let generateCSProject (pod: Pod) podExpandedFolder =
+let generateReferenceCode pod isFramework =
+    let safePodName = fileSafePodName pod.name
+    if isFramework then
+        let frameworks = alwaysArray pod.spec.JsonValue "vendored_frameworks"
+        let fwName = frameworks.[0]
+        let ref = "  <ItemGroup>"  + Environment.NewLine
+                + "    <ObjcBindingNativeFramework Include=\"" + fwName + "\" />"  + Environment.NewLine
+                + "  </ItemGroup>"  + Environment.NewLine
+                + "  <ItemGroup>" + Environment.NewLine
+                + "    <Compile Include=\"" + safePodName + ".linkwith.cs\">" + Environment.NewLine
+                + "    </Compile>" + Environment.NewLine
+                + "  </ItemGroup>" + Environment.NewLine
+        ref
+    else
+        "  <ItemGroup>" + Environment.NewLine  
+        + "    <ObjcBindingNativeLibrary Include=\"" + safePodName + ".a\" />" + Environment.NewLine
+        + "  </ItemGroup>" + Environment.NewLine
+        + "  <ItemGroup>" + Environment.NewLine
+        + "    <Compile Include=\"" + safePodName + ".linkwith.cs\">" + Environment.NewLine
+        + "        <DependentUpon>" + safePodName + ".a</DependentUpon>" + Environment.NewLine
+        + "    </Compile>" + Environment.NewLine
+        + "  </ItemGroup>" + Environment.NewLine
+    
+
+let generateCSProject (pod: Pod) podExpandedFolder isFramework =
     let podName = pod.name
     let podSpec = pod.spec
     let safePodName = fileSafePodName podName
@@ -431,12 +479,14 @@ let generateCSProject (pod: Pod) podExpandedFolder =
     CopyFile linkerFile sampleLinkerFile
     if not <| pod.IsUmbrella then
         let bundleResources = checkPodForResources pod podExpandedFolder bindingFolder
+        let binaryReference = generateReferenceCode pod isFramework
         let replacements = 
                 [   "@ProjectGuid@", Guid.NewGuid().ToString("B").ToUpper()
                     "@RootNamespace@", podNamespace
                     "@AssemblyName@", safePodName
                     "@PodName@", safePodName
                     "@References@", references
+                    "@BinaryReference@", binaryReference
                     "@BundleResources@", bundleResources
                     "@Description@", "Xamarin binding ===" + podSpec.Description.Replace("\r"," ").Replace("\n"," ") ]
         let csProjectFile = Path.Combine(bindingFolder, dllName + ".csproj")
@@ -591,7 +641,7 @@ let generateBindingForPod (pod:Pod) =
         copyBinaryAndGenerateLinkWith pod podExpandedFolder
         generateCSharpBindingsForFramework pod podExpandedFolder
         pod.empty <- false
-        generateCSProject pod podExpandedFolder
+        generateCSProject pod podExpandedFolder true
     else
         tracefn "Generating C# bindings for non-Framework pod %s" pod.name
         let producesBinary = compileNonFrameworkProject pod
@@ -601,7 +651,7 @@ let generateBindingForPod (pod:Pod) =
         if producesBinary then
             generateCSharpBindingsForCustom pod 
         if producesBinary || pod.IsUmbrella then
-            generateCSProject pod podExpandedFolder
+            generateCSProject pod podExpandedFolder false
 
     // tracefn "Pod %s, empty %b, dependencies are %A" pod.name pod.empty (pod.dependencies |> List.map (fun f->f.name)) 
     ()

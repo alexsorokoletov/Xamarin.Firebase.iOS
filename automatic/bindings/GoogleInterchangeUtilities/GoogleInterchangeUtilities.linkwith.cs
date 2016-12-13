@@ -1,5 +1,5 @@
 using ObjCRuntime;
-[assembly: LinkWith ("GoogleInterchangeUtilities.a", 
+[assembly: LinkWith ("GoogleInterchangeUtilities.framework", 
 IsCxx = true,
 SmartLink = true,
 ForceLoad = true)]

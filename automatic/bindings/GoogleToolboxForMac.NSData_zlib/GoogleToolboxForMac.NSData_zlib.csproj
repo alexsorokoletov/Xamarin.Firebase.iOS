@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{28A977AC-4FA2-4432-9CA6-285F242BFFF7}</ProjectGuid>
+    <ProjectGuid>{63C6F263-4F3E-4FA4-889F-2D40DAB93016}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.GoogleToolboxForMac.NSData_zlib</RootNamespace>
@@ -23,8 +23,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -34,11 +33,8 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Linker.cs" />
+    <Compile Include="Linker.cs" />  
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GoogleToolboxForMac.NSData_zlib.linkwith.cs">
-      <DependentUpon>GoogleToolboxForMac.NSData_zlib.a</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingApiDefinition Include="ApiDefinitions.cs" />
@@ -47,7 +43,19 @@
     <ObjcBindingCoreSource Include="StructsAndEnums.cs" />
   </ItemGroup>
   <ItemGroup>
+
+  </ItemGroup>
+  <ItemGroup>
+
+  </ItemGroup>
+  <ItemGroup>
     <ObjcBindingNativeLibrary Include="GoogleToolboxForMac.NSData_zlib.a" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GoogleToolboxForMac.NSData_zlib.linkwith.cs">
+        <DependentUpon>GoogleToolboxForMac.NSData_zlib.a</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

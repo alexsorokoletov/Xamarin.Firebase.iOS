@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{25206E07-A4B1-4625-A91A-ABA4CE6A95F4}</ProjectGuid>
+    <ProjectGuid>{568BE443-913A-409F-A394-8A5FF5F5A13A}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.GoogleInterchangeUtilities</RootNamespace>
@@ -35,9 +35,6 @@
   <ItemGroup>
     <Compile Include="Linker.cs" />  
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GoogleInterchangeUtilities.linkwith.cs">
-      <DependentUpon>GoogleInterchangeUtilities.a</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingApiDefinition Include="ApiDefinitions.cs" />
@@ -46,14 +43,22 @@
     <ObjcBindingCoreSource Include="StructsAndEnums.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ObjcBindingNativeLibrary Include="GoogleInterchangeUtilities.a" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="GoogleSymbolUtilities">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.0.0.2\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.1.1.2.0-alpha1\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
 
   </ItemGroup>
+  <ItemGroup>
+
+  </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingNativeFramework Include="Frameworks/frameworks/GoogleInterchangeUtilities.framework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GoogleInterchangeUtilities.linkwith.cs">
+    </Compile>
+  </ItemGroup>
+  
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{44513704-0CFA-43D0-AE96-769F67226A3C}</ProjectGuid>
+    <ProjectGuid>{19962D44-EBB4-4E21-BF20-3EDD968CCAC2}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.FirebaseAnalytics</RootNamespace>
@@ -35,9 +35,6 @@
   <ItemGroup>
     <Compile Include="Linker.cs" />  
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FirebaseAnalytics.linkwith.cs">
-      <DependentUpon>FirebaseAnalytics.a</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingApiDefinition Include="ApiDefinitions.cs" />
@@ -46,30 +43,38 @@
     <ObjcBindingCoreSource Include="StructsAndEnums.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ObjcBindingNativeLibrary Include="FirebaseAnalytics.a" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="FirebaseCore">
-      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseCore.0.0.2\lib\Xamarin.iOS\FirebaseCore.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseCore.3.4.5.0-alpha1\lib\Xamarin.iOS\FirebaseCore.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FirebaseInstanceID">
-      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseInstanceID.0.0.2\lib\Xamarin.iOS\FirebaseInstanceID.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="GoogleSymbolUtilities">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.0.0.2\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="GoogleToolboxForMac.NSData_zlib">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleToolboxForMac.NSData_zlib.0.0.2\lib\Xamarin.iOS\GoogleToolboxForMac.NSData_zlib.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.FirebaseInstanceID.1.0.8.0-alpha1\lib\Xamarin.iOS\FirebaseInstanceID.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GoogleInterchangeUtilities">
-      <HintPath>..\packages-tmp\DT.Xamarin.GoogleInterchangeUtilities.0.0.2\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleInterchangeUtilities.1.2.2.0-alpha1\lib\Xamarin.iOS\GoogleInterchangeUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GoogleSymbolUtilities">
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleSymbolUtilities.1.1.2.0-alpha1\lib\Xamarin.iOS\GoogleSymbolUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GoogleToolboxForMac.NSData_zlib">
+      <HintPath>..\packages-tmp\DT.Xamarin.GoogleToolboxForMac.NSData_zlib.2.1.0.0-alpha1\lib\Xamarin.iOS\GoogleToolboxForMac.NSData_zlib.dll</HintPath>
       <Private>True</Private>
     </Reference>
 
   </ItemGroup>
+  <ItemGroup>
+
+  </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingNativeFramework Include="Frameworks/frameworks/FirebaseAnalytics.framework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FirebaseAnalytics.linkwith.cs">
+    </Compile>
+  </ItemGroup>
+  
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

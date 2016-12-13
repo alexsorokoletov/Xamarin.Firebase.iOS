@@ -29,8 +29,8 @@ popd
 nuget init packages-raw packages-good
 nuget list -source DT.Automatic 
 nuget init packages-raw packages-good
-echo "------------------------- Processing Binding GoogleToolboxForMac/NSData+zlib..."
-pushd GoogleToolboxForMac.NSData_zlib
+echo "------------------------- Processing Binding GoogleInterchangeUtilities..."
+pushd GoogleInterchangeUtilities
 rm -f *.nupkg
 [ -f packages.config ] && nuget restore -source DT.Automatic -PackagesDirectory ../packages-tmp || echo "no restore required for this project"
 msbuild /t:Clean
@@ -41,8 +41,8 @@ popd
 nuget init packages-raw packages-good
 nuget list -source DT.Automatic 
 nuget init packages-raw packages-good
-echo "------------------------- Processing Binding GoogleInterchangeUtilities..."
-pushd GoogleInterchangeUtilities
+echo "------------------------- Processing Binding GoogleToolboxForMac/NSData+zlib..."
+pushd GoogleToolboxForMac.NSData_zlib
 rm -f *.nupkg
 [ -f packages.config ] && nuget restore -source DT.Automatic -PackagesDirectory ../packages-tmp || echo "no restore required for this project"
 msbuild /t:Clean

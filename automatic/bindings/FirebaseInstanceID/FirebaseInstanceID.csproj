@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3D77C7E4-6E3B-4BD2-8B71-4AFA1BC6F91F}</ProjectGuid>
+    <ProjectGuid>{0E6C5A1A-B5D7-4A85-9CE3-9C85BE175DC4}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.FirebaseInstanceID</RootNamespace>
@@ -23,8 +23,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -34,11 +33,8 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Linker.cs" />
+    <Compile Include="Linker.cs" />  
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FirebaseInstanceID.linkwith.cs">
-      <DependentUpon>FirebaseInstanceID.a</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingApiDefinition Include="ApiDefinitions.cs" />
@@ -47,7 +43,18 @@
     <ObjcBindingCoreSource Include="StructsAndEnums.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ObjcBindingNativeLibrary Include="FirebaseInstanceID.a" />
+
   </ItemGroup>
+  <ItemGroup>
+
+  </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingNativeFramework Include="Frameworks/frameworks/FirebaseInstanceID.framework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FirebaseInstanceID.linkwith.cs">
+    </Compile>
+  </ItemGroup>
+  
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

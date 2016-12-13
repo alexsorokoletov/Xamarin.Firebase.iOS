@@ -1,5 +1,5 @@
 using ObjCRuntime;
-[assembly: LinkWith ("FirebaseInstanceID.a", 
+[assembly: LinkWith ("FirebaseInstanceID.framework", 
 Frameworks = "AddressBook",
 IsCxx = true,
 SmartLink = true,

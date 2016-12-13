@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{59E3482E-2745-452D-AAD7-B9402270018E}</ProjectGuid>
+    <ProjectGuid>{D1C4B8E4-81AD-49F6-920F-394B9133F2A1}</ProjectGuid>
     <ProjectTypeGuids>{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>DreamTeam.Xamarin.GoogleSymbolUtilities</RootNamespace>
@@ -35,9 +35,6 @@
   <ItemGroup>
     <Compile Include="Linker.cs" />  
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GoogleSymbolUtilities.linkwith.cs">
-      <DependentUpon>GoogleSymbolUtilities.a</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ObjcBindingApiDefinition Include="ApiDefinitions.cs" />
@@ -46,13 +43,18 @@
     <ObjcBindingCoreSource Include="StructsAndEnums.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ObjcBindingNativeLibrary Include="GoogleSymbolUtilities.a" />
-  </ItemGroup>
-  <ItemGroup>
 
   </ItemGroup>
   <ItemGroup>
 
   </ItemGroup>
+  <ItemGroup>
+    <ObjcBindingNativeFramework Include="Frameworks/frameworks/GoogleSymbolUtilities.framework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GoogleSymbolUtilities.linkwith.cs">
+    </Compile>
+  </ItemGroup>
+  
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets" />
 </Project>

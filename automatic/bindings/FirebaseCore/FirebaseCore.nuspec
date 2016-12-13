@@ -2,7 +2,7 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
   <id>DT.Xamarin.FirebaseCore</id>
-  <version>0.0.2</version>
+  <version>3.4.5.0-alpha1</version>
   <authors>DreamTeam Mobile</authors>
   <owners>DreamTeam Mobile</owners>
   <summary>Firebase Core for iOS</summary>
@@ -14,8 +14,8 @@
   <copyright>Not yet available</copyright>    
   <tags>Xamarin iOS</tags>
   <dependencies>
-    <dependency id="DT.Xamarin.GoogleToolboxForMac.NSData_zlib" version="0.0.2" />
-    <dependency id="DT.Xamarin.GoogleInterchangeUtilities" version="0.0.2" />
+    <dependency id="DT.Xamarin.GoogleInterchangeUtilities" version="1.2.2.0-alpha1" />
+    <dependency id="DT.Xamarin.GoogleToolboxForMac.NSData_zlib" version="2.1.0.0-alpha1" />
 
   </dependencies>
   <references></references>

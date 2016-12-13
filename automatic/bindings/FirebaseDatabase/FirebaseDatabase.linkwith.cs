@@ -1,5 +1,5 @@
 using ObjCRuntime;
-[assembly: LinkWith ("FirebaseDatabase.a", 
+[assembly: LinkWith ("FirebaseDatabase.framework", 
 Frameworks = "CFNetwork Security SystemConfiguration",
 LinkerFlags = "-lc++ -licucore",
 IsCxx = true,

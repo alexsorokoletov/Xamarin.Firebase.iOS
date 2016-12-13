@@ -1,5 +1,5 @@
 using ObjCRuntime;
-[assembly: LinkWith ("GoogleSymbolUtilities.a", 
+[assembly: LinkWith ("GoogleSymbolUtilities.framework", 
 IsCxx = true,
 SmartLink = true,
 ForceLoad = true)]
