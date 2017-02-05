@@ -33,7 +33,7 @@ let rootNamespace = "DreamTeam.Xamarin."
 let rootPackageName = "DT.Xamarin."
 let defaultPodVersion = ""
 let rn = Environment.NewLine
-let mutable isVerboseOutput = false
+let mutable isVerboseOutput = true
 let firstRegexMatch input (regex:string) = 
      Regex.Matches(input, regex)
         |> Seq.cast<Match>
@@ -128,7 +128,7 @@ let podByName pod =
 let getPodSpecPath podName =
     let result = execProcessWithResult (fun info ->  
                                     info.FileName <- "pod"
-                                    info.Arguments <- "spec which lottie") 
+                                    info.Arguments <- "spec which " + podName) 
     if (result.OK && result.Messages.Count > 0) then
         result.Messages.[0]
     else
