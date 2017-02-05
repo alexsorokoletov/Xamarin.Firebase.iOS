@@ -46,11 +46,6 @@ let (|Prefix|_|) (p:string) (s:string) =
     else
         None
 
-let makeRawGithubUrl s =
-    match s with
-    | Prefix "https://github.com/CocoaPods/Specs/blob/" rest -> "https://raw.githubusercontent.com/CocoaPods/Specs/" + rest
-    | _ -> s
-
 let freshDirectory d = 
     DeleteDir d
     CreateDir d
@@ -59,6 +54,12 @@ let execProcess setup =
      let processOutLog = if isVerboseOutput then trace else ignore
      let logError = if isVerboseOutput then traceError else ignore
      ExecProcessWithLambdas setup System.TimeSpan.MaxValue (not isVerboseOutput) logError processOutLog
+
+let execProcessWithResult configProcessStartInfoF = 
+    let errors = new List<_>()
+    let messages = new List<_>()
+    let exitCode = ExecProcessWithLambdas configProcessStartInfoF System.TimeSpan.MaxValue true (errors.Add) (messages.Add)
+    ProcessResult.New exitCode messages errors
 
 let unzipWithTar targetFolder zipFile =
     freshDirectory targetFolder
@@ -124,18 +125,21 @@ let podByName pod =
     { name = pod; spec = spec; dependencies = []; custom=false; empty=false }
 
 
-let getPodSpecUrl podName =
-    let pageUrl = "http://cocoapods.org/pods/"+podName
-    let webClient = new WebClient();
-    let podPage = webClient.DownloadString(pageUrl);
-    firstRegexMatch podPage @"<a href=""(http.+\.podspec\.json)"">"
+let getPodSpecPath podName =
+    let result = execProcessWithResult (fun info ->  
+                                    info.FileName <- "pod"
+                                    info.Arguments <- "spec which lottie") 
+    if (result.OK && result.Messages.Count > 0) then
+        result.Messages.[0]
+    else
+        tracefn "%A" result.Errors
+        ""
 
 let downloadPodSpec (pod:string) =
     let podName = podNameWithoutSubSpec pod
-    let podUrl = getPodSpecUrl podName |> makeRawGithubUrl
-    let podSpecJson = (new WebClient()).DownloadString(podUrl)
+    let podUrl = getPodSpecPath podName
     let podSpecFile = podSpecFileName podName
-    File.WriteAllText(podSpecFile, podSpecJson);
+    CopyFile podSpecFile podUrl
     specForPod podName
 
 let private fileSafePodName (pod:string) =
@@ -191,8 +195,9 @@ let generateLinkWith pod =
    let linkWithContent = new System.Text.StringBuilder()
    linkWithContent.AppendLine("using ObjCRuntime;") |> ignore
    linkWithContent.AppendFormat(@"[assembly: LinkWith (""{0}"", {1}", linkTarget, Environment.NewLine) |> ignore
-   if (podSpec.Frameworks.Length > 0) then
-        linkWithContent.AppendFormat(@"Frameworks = ""{0}"",{1}", String.Join(" ", podSpec.Frameworks), Environment.NewLine) |> ignore
+   let podFrameworks = alwaysArray podSpec.JsonValue "frameworks"
+   if (podFrameworks.Length > 0) then
+        linkWithContent.AppendFormat(@"Frameworks = ""{0}"",{1}", String.Join(" ", podFrameworks), Environment.NewLine) |> ignore
    let libraries = alwaysArray podSpec.JsonValue "libraries"
    if not <| Array.isEmpty libraries then
         let linkerFlags = libraries 
