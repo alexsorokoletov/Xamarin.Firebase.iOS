@@ -1,8 +1,0 @@
-
-group Auto
-content: none
-source http://nuget.org/api/v2
-
-nuget FAKE
-nuget FSharp.Data
-nuget Newtonsoft.Json redirects:force

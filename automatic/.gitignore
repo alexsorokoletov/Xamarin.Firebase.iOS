@@ -1,8 +1,0 @@
-pods
-.paket/paket.exe
-bindings/packages-tmp
-bindings/packages-good
-bindings/**/bin
-bindings/**/obj
-bindings/**/*.nupkg
-!bindings/packages-raw
