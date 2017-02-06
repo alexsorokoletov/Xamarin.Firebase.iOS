@@ -1,4 +1,17 @@
-# Xamarin.Firebase.iOS
+# This repo is obsolete
+I was working on generating bindings from Firebase CocoaPods directly into NuGet Packages. 
+
+As a result we have know a tool called [objc-automatic](https://github.com/alexsorokoletov/objc-automatic) to do that.
+Firebase Xamarin.iOS bindings are provided by Xamarin and are now available via NuGet. 
+
+This was a good excersise in understanding how different might be pod structure and how much easier is it's with NuGet; how ObjectiveSharpie is working on huge amounts of codebase (feedback submitted!) and how Xamarin.iOS linker is working across multiple assemblies and projects.
+
+Xamarin Team, thank you for your help and support and tools.
+
+
+-----
+
+## Xamarin.Firebase.iOS
 [Google Firebase](https://firebase.google.com/docs) bindings for Xamarin.iOS. This code is provided as is.
 
 In order to use the new Firebase from Google we have to get some bindings for Xamarin apps, right?
